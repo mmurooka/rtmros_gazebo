@@ -36,3 +36,5 @@ msg/_.*\.py$
 
 # Catkin custom files
 CATKIN_IGNORE
+
+hrpsys_moveit_configs/hrp2jsknt_moveit_config/default_warehouse_mongo_db/
