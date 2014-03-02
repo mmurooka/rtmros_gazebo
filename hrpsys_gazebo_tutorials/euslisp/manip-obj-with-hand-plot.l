@@ -13,10 +13,10 @@
 (defun plot-all-class-data ()
   (dotimes (i (length (elt *all-class-data* 1)))
     ;; plot
-    (plot-contact :data (mapcar #'(lambda (x) (cdr (assoc :cont-st x))) (elt (elt *all-class-data* 1) i)))
+    (plot-contact :data (mapcar #'(lambda (x) (cdr (assoc :contact x))) (elt (elt *all-class-data* 1) i)))
     (plot-2d-coord :data (mapcar #'(lambda (x) (cdr (assoc :2d-coord x))) (elt (elt *all-class-data* 1) i)))
     (warn "plotting ~d data ~d / ~d. press any key for next plotting. ~%"
-	  (length (mapcar #'(lambda (x) (cdr (assoc :cont-st x))) (elt (elt *all-class-data* 1) i))) (+ i 1) (length (elt *all-class-data* 1)))
+	  (length (mapcar #'(lambda (x) (cdr (assoc :contact x))) (elt (elt *all-class-data* 1) i))) (+ i 1) (length (elt *all-class-data* 1)))
     ;; wait
     (read-line)
     ;; save
@@ -27,7 +27,12 @@
     ))
 
 ;; contact ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun plot-contact (&key (data *cont-st-list*) (wait nil))
+(defun plot-contact (&key (data *contact-list*) (wait nil))
+  
+  ;; init graph
+  (unless (boundp '*gnuplot-cont-st*)
+    (setq *gnuplot-cont-st* (gnuplot)))
+
   (let* ((plot-file-name "log/tmp-log-for-plot-contact.txt")
 	 (plot-log-stream
 	  (open plot-file-name :direction :output)))
@@ -63,7 +68,11 @@
     ))
 
 ;; 2d-coord ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun plot-2d-coord (&key (data *2d-coord-list*) (wait nil))
+(defun plot-2d-coord (&key (data *2dcoord-list*) (wait nil))
+
+  (unless (boundp '*gnuplot-2d-coord*)
+    (setq *gnuplot-2d-coord* (gnuplot)))
+
   (let* ((plot-file-name "log/tmp-log-for-plot-2d.txt")
 	 (plot-log-stream
 	  (open plot-file-name :direction :output))

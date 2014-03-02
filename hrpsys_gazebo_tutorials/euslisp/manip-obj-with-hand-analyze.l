@@ -17,7 +17,7 @@
 
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun calc-feature-value
-  (&optional (cont-st (car *cont-st-list*)) (2d-coord (car *2d-coord-list*)))
+  (&optional (cont-st (car *contact-list*)) (2d-coord (car *2dcoord-list*)))
 
   (let* ((fv-yaw-vel (make-list 5 :initial-element 0))
 	 (fv-d-vel (make-list 5 :initial-element 0))
@@ -35,12 +35,12 @@
 	       (y-crnt (elt (car (elt 2d-coord i)) 1))
 	       (y-prev (elt (car (elt 2d-coord (- i 1))) 1))
 	       (xy-vel (float-vector (- x-crnt x-prev) (- y-crnt y-prev)))
-	       (d-vel (abs (/ (norm xy-vel) *dt*)))
+	       (d-vel (abs (/ (norm xy-vel) *manip-dt*)))
 	       (d-vel-thre 1)
 	       (xy-unit-vel (if (< d-vel d-vel-thre) (float-vector 0 0) (normalize-vector xy-vel)))
 	       (yaw-crnt (cadr (elt 2d-coord i)))
 	       (yaw-prev (cadr (elt 2d-coord (- i 1))))
-	       (yaw-vel (abs (/ (- yaw-crnt yaw-prev) *dt*)))
+	       (yaw-vel (abs (/ (- yaw-crnt yaw-prev) *manip-dt*)))
 	       (yaw-unit-vel (float-vector (cos yaw-crnt) (sin yaw-crnt)))
 	       (cor-xy-yaw (v. xy-unit-vel yaw-unit-vel)))
 
@@ -59,10 +59,10 @@
 
 (defun calc-feature-value-all (&key (output t))
   (setq *fv-list* nil)
-  (dotimes (i (length *cont-st-list*))
+  (dotimes (i (length *contact-list*))
     (let*
-	((cont-st (elt *cont-st-list* i))
-	 (2d-coord (elt *2d-coord-list* i)))
+	((cont-st (elt *contact-list* i))
+	 (2d-coord (elt *2dcoord-list* i)))
       (push-back (calc-feature-value cont-st 2d-coord) *fv-list*)))
 
   (when output
@@ -82,7 +82,7 @@
   ;;(load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
   (setq *all-orig-data* nil)
   (dotimes (i (length *fv-list*))
-    (push-back (list (cons :manip (elt *manip-list* i)) (cons :cont-st (elt *cont-st-list* i)) (cons :2d-coord (elt *2d-coord-list* i)) (cons :fv (elt *fv-list* i)))
+    (push-back (list (cons :manip (elt *manip-list* i)) (cons :contact (elt *contact-list* i)) (cons :2d-coord (elt *2dcoord-list* i)) (cons :fv (elt *fv-list* i)))
 	       *all-orig-data*))
   (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
   nil)

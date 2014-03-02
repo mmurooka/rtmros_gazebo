@@ -6,6 +6,22 @@
 (rbrain)
 
 
+;; init function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun init-variable ()
+  (setq *manip-cnt* 0)
+  (setq *manip-list* nil)
+  (setq *contact-list* nil)
+  (setq *2dcoord-list* nil)
+  (setq *fv-list* nil)
+  (setq *manip-dt* 0.002)
+  (send *obj* :put :vcont (list nil nil nil nil))
+  (send *obj* :put :lcont (list nil nil nil nil))
+  (send *obj* :put :fcont nil)
+  (send *obj* :put :contact :face)
+  (send *obj* :put :2d-pos (float-vector 0 0))
+  (send *obj* :put :2d-angle 0)
+  )
+
 ;; update function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; coord
 (defun update-coord-cupboard (&optional (model-id 0))
@@ -38,10 +54,10 @@
     (send *obj* :put :fcont (not (position nil bottom-vcont)))
     (send *obj* :put :2d-pos (scale 0.001 (scale (/ 1.0 (length bottom-vertices)) (reduce #'v+ bottom-vertices))))
     (send *obj* :put :2d-angle (elt (car (send (send (send *obj* :copy-worldcoords) :rotate pi :z) :rpy-angle)) 0))
-    (cond ((send *obj* :get :fcont) (send *obj* :put :cont-st :face))
-	  ((position t (send *obj* :get :lcont)) (send *obj* :put :cont-st :line))
-	  ((position t (send *obj* :get :vcont)) (send *obj* :put :cont-st :vertex))
-	  (t (send *obj* :put :cont-st :nil)))
+    (cond ((send *obj* :get :fcont) (send *obj* :put :contact :face))
+	  ((position t (send *obj* :get :lcont)) (send *obj* :put :contact :line))
+	  ((position t (send *obj* :get :vcont)) (send *obj* :put :contact :vertex))
+	  (t (send *obj* :put :contact :nil)))
     ))
 
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -56,7 +72,7 @@
 	(send (elt bottom-edges i) :draw-on :color #f(1 0 0) :width 5))
       ))
   (send *pickview* :viewer :viewsurface
-	:string 10 20 (string (send *obj* :get :cont-st)))
+	:string 10 20 (string (send *obj* :get :contact)))
   )
 
 

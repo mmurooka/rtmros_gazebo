@@ -8,9 +8,6 @@
 
 (ros::roseus "manip_obj_with_hand")
 
-(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils")
-(load "package://hrpsys_gazebo_tutorials/euslisp/hand-command-publisher.l")
-(load "package://hrpsys_gazebo_tutorials/euslisp/drum_body.l")
 (load "package://hrpsys_ros_bridge_tutorials/euslisp/hrp3hand-utils.l")
 (load "models/single-arrow-object.l")
 
@@ -20,6 +17,9 @@
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-plot.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-strategy.l")
 
+(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils")
+(load "package://hrpsys_gazebo_tutorials/euslisp/hand-command-publisher.l")
+(load "package://hrpsys_gazebo_tutorials/euslisp/drum_body.l")
 
 
 (defun usage ()
@@ -28,7 +28,7 @@
   (warn "(try-once (car *manip-list*)) ;; play log manip~%")
   )
 
-(defun init (&key (model-num 6) (model-name "cupboard_wh"))
+(defun init (&key (model-num 1) (model-name "cupboard_wh"))
 
   ;; load controller parameter for hand
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_L.yaml HRP3HAND_L")
@@ -74,26 +74,13 @@
   (set-hand-pose :hook-pose :arms)
   (unix::usleep (* 1000 1000))
 
-  ;; init graph
-  (unless (boundp '*gnuplot-cont-st*)
-    (setq *gnuplot-cont-st* (gnuplot)))
-  (unless (boundp '*gnuplot-2d-coord*)
-    (setq *gnuplot-2d-coord* (gnuplot)))
-
   ;; init variables
-  (setq *manip-cnt* 0)
-  (setq *manip-list* nil)
-  (setq *cont-st-list* nil)
-  (setq *2d-coord-list* nil)
-  (setq *fv-list* nil)
-  (setq *dt* 0.002)
-  (send *obj* :put :vcont (list nil nil nil nil))
-  (send *obj* :put :lcont (list nil nil nil nil))
-  (send *obj* :put :fcont nil)
-  (send *obj* :put :cont-st :face)
-  (send *obj* :put :2d-pos (float-vector 0 0))
-  (send *obj* :put :2d-angle 0)
+  (init-variable)
   )
+
+(defun init-cupboard ()
+  (init :model-name "cupboard_wh"))
 
 (defun init-drum ()
   (init :model-name "drum_wh"))
+

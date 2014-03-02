@@ -15,8 +15,8 @@
   ()
   ;; init variables
   (setq *manip-list* nil)
-  (setq *cont-st-list* nil)
-  (setq *2d-coord-list* nil)
+  (setq *contact-list* nil)
+  (setq *2dcoord-list* nil)
   (setq *manip-cnt* 0)
   ;; loop
   (do-until-key
@@ -26,7 +26,7 @@
   (dump-loadable-structure
    (format nil "log/log-~a.l"
 	   (concatenate string (remove 58 (remove 32 (butlast (concatenate cons (unix:asctime (unix:localtime))))))))
-   *manip-list* *cont-st-list* *2d-coord-list*)
+   *manip-list* *contact-list* *2dcoord-list*)
   ;; plot graph
   ;;(plot-contact)
   ;;(plot-2d-coord)
@@ -92,12 +92,12 @@
 	(unless (equal i 0) ;; I don't know why, but the first coord is not updated.
 	  (push-back (list (float-vector f1x f1y f1z) (float-vector f2x f2y f2z)) manip-tmp)
 	  (push-back (list (send *obj* :get :2d-pos) (send *obj* :get :2d-angle)) 2d-coord-tmp)
-	  (push-back (send *obj* :get :cont-st) cont-st-tmp))
+	  (push-back (send *obj* :get :contact) cont-st-tmp))
 	(when (check-fall-down)
 	  (setq fall-down-flag t)
 	  (return-from nil nil))
 	(x::window-main-one)
-	(unix::usleep (round (* *dt* 1000 1000)))
+	(unix::usleep (round (* *manip-dt* 1000 1000)))
 	))
     (cond (fall-down-flag
 	   (warn "~2d : detect falling down~%" *manip-cnt*))
@@ -112,8 +112,8 @@
       (setq 2d-coord-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) 0))))
     (unless manip-input
       (push-back manip-tmp *manip-list*)
-      (push-back cont-st-tmp *cont-st-list*)
-      (push-back 2d-coord-tmp *2d-coord-list*))
+      (push-back cont-st-tmp *contact-list*)
+      (push-back 2d-coord-tmp *2dcoord-list*))
     (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
     ))
 
