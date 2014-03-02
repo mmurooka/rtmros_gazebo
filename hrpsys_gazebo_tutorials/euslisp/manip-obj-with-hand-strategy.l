@@ -9,18 +9,17 @@
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-util.l")
 
 
-(defun update-draw-contact-loop ()
-  (do-until-key
-   (update-coord-cupboard)
-   (update-contact-cupboard)
-   (send *pickview* :draw-objects :flush nil)
-   (draw-contact-cupboard)
-   (send *viewer* :flush)
-   (x::window-main-one)))
+(defun usage-strategy
+  ()
 
-(defun set-thread-update-draw-contact ()
-  (sys:make-thread 1)
-  (sys:thread #'update-draw-contact-loop))
+  (warn ";; strategy ;;;;;;;;;;;;;;;;;~%")
+  (warn "(pull-slide)~%")
+  (warn "(push-slide)~%")
+  (warn "(pull-tilt)~%")
+  (warn "(push-tilt)~%")
+  (warn "(lift-up)~%")
+  )
+
 
 ;; pull slide ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun pull-slide ()

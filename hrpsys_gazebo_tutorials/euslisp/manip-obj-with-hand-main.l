@@ -11,24 +11,41 @@
 (load "package://hrpsys_ros_bridge_tutorials/euslisp/hrp3hand-utils.l")
 (load "models/single-arrow-object.l")
 
-(load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-manip.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-generate.l")
+(load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-manip.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-analyze.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-plot.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-strategy.l")
 
-(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils")
 (load "package://hrpsys_gazebo_tutorials/euslisp/hand-command-publisher.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/drum_body.l")
 
 
-(defun usage ()
+(defun usage-main
+  ()
+
+  (warn ";; main ;;;;;;;;;;;;;;;;;~%")
   (warn "(init) ;; initialize~%")
-  (warn "(try) ;; try manip, save log, and plot graph~%")
-  (warn "(try-once (car *manip-list*)) ;; play log manip~%")
+  (warn "(main) ;; initialize~%")
   )
 
-(defun init (&key (model-num 1) (model-name "cupboard_wh"))
+(defun usage
+  ()
+
+  (usage-main)
+  (usage-generate)
+  (usage-manip)
+  (usage-analyze)
+  (usage-plot)
+  (usage-strategy)
+  (usage-util)
+  )
+
+;; initialize ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun init
+  (&key (model-num 1) (model-name "cupboard_wh"))
+
+  (setq *manip-obj-with-hand-init-flag* t)
 
   ;; load controller parameter for hand
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_L.yaml HRP3HAND_L")
@@ -83,4 +100,33 @@
 
 (defun init-drum ()
   (init :model-name "drum_wh"))
+
+
+;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun main1
+  ()
+
+  ;; init
+  (cond ((boundp *manip-obj-with-hand-init-flag*)
+	 (init-variable))
+	(t (init)))
+  ;; loop
+  (do-until-key
+   (manip))
+  ;; save log
+  (save-variable)
+  ;; plot graph
+  (plot-all)
+  )
+
+(defun main2
+  ()
+
+  ;; load log
+  (load-variable)
+  ;; 
+  (analize)
+  ;;
+  (plot-all-class-data)
+  )
 

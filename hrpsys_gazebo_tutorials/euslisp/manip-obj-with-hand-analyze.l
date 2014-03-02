@@ -9,19 +9,30 @@
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-util.l")
 
 
+(defun usage-analyze
+  ()
+
+  (warn ";; analize ;;;;;;;;;;;;;;;;;~%")
+  (warn "(analize)~%")
+  (warn "(calc-feature-value)~%")
+  (warn "(classify-feature-value)~%")
+  )
+
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun analyze (&key (class-num 5))
-  (calc-feature-value-all :output nil)
+(defun analyze
+  (&key (class-num 5))
+
+  (calc-feature-value :output nil)
   (classify-feature-value :class-num class-num))
 
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun calc-feature-value
+(defun calc-feature-value-one
   (&optional (cont-st (car *contact-list*)) (2d-coord (car *2dcoord-list*)))
 
-  (let* ((fv-yaw-vel (make-list 5 :initial-element 0))
-	 (fv-d-vel (make-list 5 :initial-element 0))
-	 (fv-cor-xy-yaw (make-list 5 :initial-element 0)))
+  (let* ((fv-yaw-vel (make-list 5 :initial-element 0)) ;; yaw velocity
+	 (fv-d-vel (make-list 5 :initial-element 0)) ;; 2d velocity
+	 (fv-cor-xy-yaw (make-list 5 :initial-element 0))) ;; correlation between yaw and 2d
     (dotimes (i (length cont-st))
       (unless (equal i 0)
 	(let* ((cont (elt cont-st i))
@@ -29,7 +40,8 @@
 		(cond ((equal cont :face) 3)
 		      ((equal cont :line) 2)
 		      ((equal cont :vertex) 1)
-		      ((equal cont :nil) 0)))
+		      ((equal cont :nil) 0)
+		      ((equal cont :invalid) 0)))
 	       (x-crnt (elt (car (elt 2d-coord i)) 0))
 	       (x-prev (elt (car (elt 2d-coord (- i 1))) 0))
 	       (y-crnt (elt (car (elt 2d-coord i)) 1))
@@ -57,13 +69,15 @@
     (concatenate float-vector (append fv-yaw-vel fv-d-vel (list 0 0) (subseq fv-cor-xy-yaw 2)))
     ))
 
-(defun calc-feature-value-all (&key (output t))
+(defun calc-feature-value
+  (&key (output t))
+
   (setq *fv-list* nil)
   (dotimes (i (length *contact-list*))
     (let*
 	((cont-st (elt *contact-list* i))
 	 (2d-coord (elt *2dcoord-list* i)))
-      (push-back (calc-feature-value cont-st 2d-coord) *fv-list*)))
+      (push-back (calc-feature-value-one cont-st 2d-coord) *fv-list*)))
 
   (when output
     (dolist (fv *fv-list*)
@@ -78,11 +92,13 @@
   )
 
 ;; classify feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun classify-feature-value (&key (class-num 3))
-  ;;(load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
+(defun classify-feature-value
+  (&key (class-num 3))
+
+  ;; (load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
   (setq *all-orig-data* nil)
   (dotimes (i (length *fv-list*))
-    (push-back (list (cons :manip (elt *manip-list* i)) (cons :contact (elt *contact-list* i)) (cons :2d-coord (elt *2dcoord-list* i)) (cons :fv (elt *fv-list* i)))
+    (push-back (list (cons :manip (elt *manip-list* i)) (cons :contact (elt *contact-list* i)) (cons :2dcoord (elt *2dcoord-list* i)) (cons :fv (elt *fv-list* i)))
 	       *all-orig-data*))
   (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
   nil)

@@ -9,45 +9,32 @@
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-util.l")
 
 
-
-;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun try
+(defun usage-manip
   ()
-  ;; init variables
-  (setq *manip-list* nil)
-  (setq *contact-list* nil)
-  (setq *2dcoord-list* nil)
-  (setq *manip-cnt* 0)
-  ;; loop
-  (do-until-key
-   (try-once)
-   (incf *manip-cnt*))
-  ;; save log
-  (dump-loadable-structure
-   (format nil "log/log-~a.l"
-	   (concatenate string (remove 58 (remove 32 (butlast (concatenate cons (unix:asctime (unix:localtime))))))))
-   *manip-list* *contact-list* *2dcoord-list*)
-  ;; plot graph
-  ;;(plot-contact)
-  ;;(plot-2d-coord)
+
+  (warn ";; manip ;;;;;;;;;;;;;;;;;~%")
+  (warn "(manip)~%")
+  (warn "(manip (elt *manip-list* 0)) ;; play log manip~%")
   )
 
-;; manip ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun try-once (&optional manip-input)
 
+;; manip ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun manip (&optional manip-input)
+
+  ;; init object pose
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
   (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
   (unix::usleep (* 100 1000))
 
-  (let* ((loop-num 500)
+  (let* ((loop-num 500) ;; loop num
 	 (f1x 0.0) (f1y 0.0) (f1z 0.0)
 	 (f2x 0.0) (f2y 0.0) (f2z 0.0)
 	 (fmax1 30) (fmax2 10) (fmin1 -30) (fmin2 -10) fmax fmin dfmax dfmin
 	 ;; (fmax 20) (fmin -20) (dfmax (/ fmax 10.0)) (dfmin (/ fmin 10.0))
-	 manip-tmp cont-st-tmp 2d-coord-tmp
-	 (fall-down-flag nil)
-	 )
+	 manip-tmp contact-tmp 2dcoord-tmp
+	 (fall-down-flag nil))
     (dotimes (i loop-num)
+      ;; set force
       (setq fmax (+ (random (float (- fmax1 fmax2))) fmax2))
       (setq fmin (+ (random (float (- fmin2 fmin1))) fmin1))
       (setq dfmax (/ fmax 10.0))
@@ -64,6 +51,7 @@
 	(setq f2x (max (min (+ f2x df2x) fmax) fmin)
 	      f2y (max (min (+ f2y df2y) fmax) fmin)
 	      f2z (max (min (+ f2z df2z) fmax) fmin))
+	;; add force
 	(cond
 	 (manip-input
 	  (send-all *gplist* :add-force2 (elt (elt manip-input i) 0) (elt (elt manip-input i) 1)))
@@ -71,6 +59,7 @@
 	  (send-all *gplist* :add-force2 (float-vector f1x f1y f1z) (float-vector f2x f2y f2z))))
 	;; (warning-message 2 "loop ~d/~d f1:~a f2:~a~%" i loop-num (float-vector f1x f1y f1z) (float-vector f2x f2y f2z))
 
+	;; update coord and contact and view them
 	(update-coord-cupboard)
 	(update-contact-cupboard)
 	(when (equal (mod i 10) 0)
@@ -91,8 +80,8 @@
 	  (send *viewer* :flush))
 	(unless (equal i 0) ;; I don't know why, but the first coord is not updated.
 	  (push-back (list (float-vector f1x f1y f1z) (float-vector f2x f2y f2z)) manip-tmp)
-	  (push-back (list (send *obj* :get :2d-pos) (send *obj* :get :2d-angle)) 2d-coord-tmp)
-	  (push-back (send *obj* :get :contact) cont-st-tmp))
+	  (push-back (list (send *obj* :get :2d-pos) (send *obj* :get :2d-angle)) 2dcoord-tmp)
+	  (push-back (send *obj* :get :contact) contact-tmp))
 	(when (check-fall-down)
 	  (setq fall-down-flag t)
 	  (return-from nil nil))
@@ -106,14 +95,16 @@
 		  (res-eval-ave (/ (reduce #'+ res-eval-list) (length res-eval-list))))
 	     (warn "~2d : ~a : ~a~%" *manip-cnt* res-eval-list res-eval-ave)
 	     (push-back (list *manip-cnt* res-eval-list res-eval-ave) manip-tmp))))
+    ;; overwirte with the invalid value when falling down
     (when fall-down-flag
       (setq manip-tmp (make-list (- loop-num 1) :initial-element (float-vector 0 0 0)))
-      (setq cont-st-tmp (make-list (- loop-num 1) :initial-element :face))
-      (setq 2d-coord-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) 0))))
+      (setq contact-tmp (make-list (- loop-num 1) :initial-element :invalid))
+      (setq 2dcoord-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) 0))))
     (unless manip-input
       (push-back manip-tmp *manip-list*)
-      (push-back cont-st-tmp *contact-list*)
-      (push-back 2d-coord-tmp *2dcoord-list*))
+      (push-back contact-tmp *contact-list*)
+      (push-back 2dcoord-tmp *2dcoord-list*)
+      (incf *manip-cnt*))
     (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
     ))
 

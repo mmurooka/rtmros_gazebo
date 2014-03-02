@@ -9,7 +9,25 @@
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-util.l")
 
 
-(defun generate ()
+(defun usage-generate
+  ()
+
+  (warn ";; generate ;;;;;;;;;;;;;;;;;~%")
+  (warn "(generate) ;; generate default model~%")
+  )
+
+
+;; generate function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; default
+(defun generate
+  ()
+
+  (generate-cupboard))
+
+;; cupboard
+(defun generate-cupboard
+  ()
+
   (let* ((obj-pp-list ;; pysical parameter list
 	  (list
 	   (list (cons :mass 5)
@@ -79,7 +97,10 @@
       )
     ))
 
-(defun generate-drum ()
+;; drum
+(defun generate-drum
+  ()
+
   (let* ((obj-pp-list ;; pysical parameter list
 	  (list
 	   (list (cons :mass 5)

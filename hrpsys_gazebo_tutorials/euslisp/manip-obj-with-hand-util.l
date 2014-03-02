@@ -6,14 +6,30 @@
 (rbrain)
 
 
-;; init function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun init-variable ()
+(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils")
+
+
+(defun usage-util
+  ()
+
+  (warn ";; util ;;;;;;;;;;;;;;;;;~%")
+  (warn "(init-variable)~%")
+  (warn "(save-variable)~%")
+  (warn "(load-variable)~%")
+  )
+
+
+;; init ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun init-variable
+  ()
+
   (setq *manip-cnt* 0)
   (setq *manip-list* nil)
   (setq *contact-list* nil)
   (setq *2dcoord-list* nil)
   (setq *fv-list* nil)
   (setq *manip-dt* 0.002)
+  (setq *all-class-data* nil)
   (send *obj* :put :vcont (list nil nil nil nil))
   (send *obj* :put :lcont (list nil nil nil nil))
   (send *obj* :put :fcont nil)
@@ -22,9 +38,27 @@
   (send *obj* :put :2d-angle 0)
   )
 
-;; update function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; save/load ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun save-variable
+  ()
+
+  (dump-loadable-structure
+   (format nil "log/log-~a.l"
+	   (string-downcase (concatenate string (remove 58 (remove 32 (butlast (concatenate cons (unix:asctime (unix:localtime)))))))))
+   *manip-list* *contact-list* *2dcoord-list*))
+
+(defun load-variable
+  ()
+
+  (load (format nil "./~a" (string-downcase (string (read (piped-fork "ls -t1 log/*.l | head -n 1"))))))
+  )
+
+;; update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; coord
-(defun update-coord-cupboard (&optional (model-id 0))
+(defun update-coord-cupboard
+  (&optional (model-id 0))
+
   ;; set gazebo model pose to eus model
   (let* ((gzb-pose (send (send (elt *gplist* model-id) :get-pose) :copy-worldcoords))
 	 (trans-gzb-pose (send gzb-pose :translate #f(0 0 -500.5) :local))
@@ -34,7 +68,9 @@
     ))
 
 ;; contact
-(defun update-contact-cupboard ()
+(defun update-contact-cupboard
+  ()
+
   (let* ((bottom-face (send *obj* :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges))
@@ -61,7 +97,10 @@
     ))
 
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun draw-contact-cupboard ()
+;; once
+(defun draw-contact-cupboard
+  ()
+
   (let* ((bottom-face (send *obj* :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges)))
@@ -74,6 +113,22 @@
   (send *pickview* :viewer :viewsurface
 	:string 10 20 (string (send *obj* :get :contact)))
   )
+
+;; loop
+(defun update-draw-contact-loop ()
+  (do-until-key
+   (update-coord-cupboard)
+   (update-contact-cupboard)
+   (send *pickview* :draw-objects :flush nil)
+   (draw-contact-cupboard)
+   (send *viewer* :flush)
+   (x::window-main-one)))
+
+;; thread
+(defun set-thread-update-draw-contact ()
+  (sys:make-thread 1)
+  (sys:thread #'update-draw-contact-loop))
+
 
 
 
@@ -126,7 +181,9 @@
   )
 
 ;; hand controller function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun set-hand-pose (&optional (pose :hook-pose) (arm :arms))
+(defun set-hand-pose
+  (&optional (pose :hook-pose) (arm :arms))
+
   (when (or (equal arm :larm) (equal arm :lhand) (equal arm :arms) (equal arm :hands))
     (send *lhand* pose))
   (when (or (equal arm :rarm) (equal arm :rhand) (equal arm :arms) (equal arm :hands))
@@ -143,6 +200,7 @@
 ;; model function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun make-73b2-cupboard-without-all-door
   (&key (name "73b2-cupboard-without-door"))
+
   (let* ((d 353) (w 586) (h 1816)
 	 (d/2 (/ d 2)) (w/2 (/ w 2)) (-w/2 (/ w -2))
 	 (handle-offset 850)
