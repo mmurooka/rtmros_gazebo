@@ -109,6 +109,7 @@ namespace gazebo
     // Called by the world update start event
     void OnUpdate(const common::UpdateInfo & /*_info*/)
     {
+      // comment in the following lines in order to set velocity
       // this->model->SetLinearVel(this->linear_vel);
       // this->model->SetAngularVel(this->angular_vel);
     }
