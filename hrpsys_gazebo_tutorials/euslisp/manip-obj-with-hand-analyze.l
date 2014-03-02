@@ -91,18 +91,22 @@
 	((cont-st (elt *contact-list* i))
 	 (2d-coord (elt *2dcoord-list* i)))
       (push-back (calc-feature-value-one cont-st 2d-coord) *fv-list*)))
-
   (when output
-    (dolist (fv *fv-list*)
-      (warn "----------------------------------------------------------------~%")
-      (warn " ~10a  ~16a  ~16a  ~16a~%"
-	    "cont\\fv" "fv-yaw-vel" "fv-d-vel" "fv-cor-xy-yaw")
-      (warn "----------------------------------------------------------------~%")
-      (dotimes (i (/ (length  fv) 3))
-	(warn " ~10a  ~16a  ~16a  ~16a~%"
-	      (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum)) (elt fv i) (elt fv (+ i (/ (length  fv) 3))) (elt fv (+ i (* (/ (length  fv) 3) 2))))))
-    (warn "----------------------------------------------------------------~%"))
+    (print-feature-value))
   )
+
+(defun print-feature-value
+  ()
+
+  (dolist (fv *fv-list*)
+    (warn "----------------------------------------------------------------~%")
+    (warn " ~10a  ~16a  ~16a  ~16a~%"
+	  "cont\\fv" "fv-yaw-vel" "fv-d-vel" "fv-cor-xy-yaw")
+    (warn "----------------------------------------------------------------~%")
+    (dotimes (i (/ (length  fv) 3))
+      (warn " ~10a  ~16a  ~16a  ~16a~%"
+	    (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum)) (elt fv i) (elt fv (+ i (/ (length  fv) 3))) (elt fv (+ i (* (/ (length  fv) 3) 2))))))
+  (warn "----------------------------------------------------------------~%"))
 
 ;; classify feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun classify-feature-value
