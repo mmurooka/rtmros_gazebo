@@ -37,6 +37,10 @@
   (setq *manip-dt* 0.002)
   (setq *manip-loop-num* 500)
 
+  ;; strategy
+  (setq *strategy-manip-list* nil)
+  (gen-all-strategy)
+
   ;; object state
   (send *obj* :put :vcont (list nil nil nil nil))
   (send *obj* :put :lcont (list nil nil nil nil))
