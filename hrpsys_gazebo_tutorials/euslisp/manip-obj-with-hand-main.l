@@ -96,9 +96,6 @@
   ;; init variables
   (init-variable)
 
-  ;; generate strategy
-  (gen-all-strategy)
-
   (setq *manip-obj-with-hand-init-flag* t)
   )
 
@@ -132,7 +129,9 @@
   ;; load
   (load-variable)
   ;; analyze
-  (analyze)
+  (unless (analyze)
+    (warn "failed classification~%")
+    (return-from main2 nil))
   ;; plot
   (plot-all-class-data)
   )
@@ -151,8 +150,9 @@
   (plot-all)
   ;; wait
   (read-line)
-  ;; analyze
-  (analyze)
+  (unless (analyze)
+    (warn "failed classification~%")
+    (return-from main2 nil))
   ;; plot
   (plot-all-class-data)
   )
