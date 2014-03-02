@@ -24,7 +24,8 @@
   (&key (class-num 3))
 
   (calc-feature-value :output nil)
-  (classify-feature-value :class-num class-num))
+  (classify-feature-value :class-num class-num)
+  (not (equal *all-class-data* :error)))
 
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun calc-feature-value-one
@@ -54,19 +55,31 @@
 	       (yaw-prev (cadr (elt 2d-coord (- i 1))))
 	       (yaw-vel (abs (/ (- yaw-crnt yaw-prev) *manip-dt*)))
 	       (yaw-unit-vel (float-vector (cos yaw-crnt) (sin yaw-crnt)))
-	       (cor-xy-yaw (v. xy-unit-vel yaw-unit-vel)))
+	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel))))
 
 	  ;; (print (list yaw-vel d-vel xy-unit-vel yaw-unit-vel)) ;; for debug
+
+	  ;; each contact state
 	  (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) yaw-vel))
 	  (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) d-vel))
 	  (setf (elt fv-cor-xy-yaw cont-num) (+ (elt fv-cor-xy-yaw cont-num) cor-xy-yaw))
+	  ;; sum
 	  (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) yaw-vel))
 	  (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) d-vel))
 	  (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) cor-xy-yaw))
 	  )))
 
+    ;; normalize
+    (dotimes (cont-num 4)
+      (setf (elt fv-yaw-vel cont-num) (/ (elt fv-yaw-vel cont-num) (elt fv-yaw-vel 4)))
+      (setf (elt fv-d-vel cont-num) (/ (elt fv-d-vel cont-num) (elt fv-d-vel 4)))
+      (setf (elt fv-cor-xy-yaw cont-num) (/ (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw 4))))
+
     ;; (print (list fv-yaw-vel fv-d-vel fv-cor-xy-yaw)) ;; for debug
-    (concatenate float-vector (append fv-yaw-vel fv-d-vel (list 0 0) (subseq fv-cor-xy-yaw 2)))
+
+    (concatenate float-vector (append (subseq fv-yaw-vel 0 4) (subseq fv-d-vel  0 4) (subseq fv-cor-xy-yaw 0 4)))
+    ;;(concatenate float-vector (append (subseq fv-yaw-vel 0 4) (subseq fv-d-vel  0 4) (list 0 0) (subseq fv-cor-xy-yaw 2 4)))
+    ;;(concatenate float-vector (append fv-yaw-vel fv-d-vel (list 0 0) (subseq fv-cor-xy-yaw 2))) ;; include sum
     ))
 
 (defun calc-feature-value
@@ -85,9 +98,9 @@
       (warn " ~10a  ~16a  ~16a  ~16a~%"
 	    "cont\\fv" "fv-yaw-vel" "fv-d-vel" "fv-cor-xy-yaw")
       (warn "----------------------------------------------------------------~%")
-      (dotimes (i 5)
+      (dotimes (i (/ (length  fv) 3))
 	(warn " ~10a  ~16a  ~16a  ~16a~%"
-	      (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum)) (elt fv i) (elt fv (+ i 5)) (elt fv (+ i 10)))))
+	      (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum)) (elt fv i) (elt fv (+ i (/ (length  fv) 3))) (elt fv (+ i (* (/ (length  fv) 3) 2))))))
     (warn "----------------------------------------------------------------~%"))
   )
 
