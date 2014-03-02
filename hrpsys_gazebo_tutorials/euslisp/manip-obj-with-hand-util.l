@@ -23,14 +23,21 @@
 (defun init-variable
   ()
 
-  (setq *manip-cnt* 0)
+  ;; result
   (setq *manip-list* nil)
   (setq *contact-list* nil)
   (setq *2dcoord-list* nil)
   (setq *fv-list* nil)
+
+  ;; final result
+  (setq *all-class-data* nil)
+
+  ;; manip meta parameter
+  (setq *manip-cnt* 0)
   (setq *manip-dt* 0.002)
   (setq *manip-loop-num* 500)
-  (setq *all-class-data* nil)
+
+  ;; object state
   (send *obj* :put :vcont (list nil nil nil nil))
   (send *obj* :put :lcont (list nil nil nil nil))
   (send *obj* :put :fcont nil)

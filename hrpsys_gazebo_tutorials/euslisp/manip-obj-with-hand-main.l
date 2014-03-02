@@ -43,9 +43,11 @@
 
 ;; initialize ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun init
-  (&key (model-num 1) (model-name "cupboard_wh"))
+  (&key (model-num 1) (model-name "cupboard_wh") (force nil))
 
-  (setq *manip-obj-with-hand-init-flag* t)
+  (when (and (boundp '*manip-obj-with-hand-init-flag*) (not force))
+    (init-variable)
+    (return-from init nil))
 
   ;; load controller parameter for hand
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_L.yaml HRP3HAND_L")
@@ -93,6 +95,11 @@
 
   ;; init variables
   (init-variable)
+
+  ;; generate strategy
+  (gen-all-strategy)
+
+  (setq *manip-obj-with-hand-init-flag* t)
   )
 
 (defun init-cupboard ()
@@ -107,9 +114,7 @@
   ()
 
   ;; init
-  (cond ((boundp '*manip-obj-with-hand-init-flag*)
-	 (init-variable))
-	(t (init)))
+  (init)
   ;; loop
   (do-until-key
    (manip))
@@ -123,7 +128,7 @@
   ()
 
   ;; init
-  (init-variable)
+  (init)
   ;; load
   (load-variable)
   ;; analyze
@@ -132,3 +137,22 @@
   (plot-all-class-data)
   )
 
+(defun main-strategy
+  ()
+
+  ;; init
+  (init)
+  ;; loop
+  (dolist (strategy *strategy-manip-list*)
+    (manip :manip-input strategy))
+  ;; save
+  (save-variable)
+  ;; plot
+  (plot-all)
+  ;; wait
+  (read-line)
+  ;; analyze
+  (analyze)
+  ;; plot
+  (plot-all-class-data)
+  )

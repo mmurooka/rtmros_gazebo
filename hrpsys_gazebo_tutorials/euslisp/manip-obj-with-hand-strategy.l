@@ -33,7 +33,7 @@
   (setq *manip-pull-slide* nil)
   (dotimes (i *manip-loop-num*)
     (push-back (list (float-vector 10 0 2) (float-vector 10 0 2)) *manip-pull-slide*))
-  )
+  (push-back *manip-pull-slide* *strategy-manip-list*))
 
 ;; push slide ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun push-slide ()
@@ -47,7 +47,7 @@
   (setq *manip-push-slide* nil)
   (dotimes (i *manip-loop-num*)
     (push-back (list (float-vector -5 0 -5) (float-vector -5 0 -5)) *manip-push-slide*))
-  )
+  (push-back *manip-push-slide* *strategy-manip-list*))
 
 ;; pull tile ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun pull-tilt ()
@@ -80,7 +80,8 @@
     ;;(dotimes (i (/ *manip-loop-num* 2))
     (dotimes (i 300)
       (push-back (list (float-vector 20 -1 2) (float-vector -10 0 -2)) *manip-pull-tilt*))
-    ))
+    )
+  (push-back *manip-pull-tilt* *strategy-manip-list*))
 
 ;; push tilt ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun push-tilt ()
@@ -111,7 +112,8 @@
     ;;(dotimes (i (/ *manip-loop-num* 2))
     (dotimes (i 300)
       (push-back (list (float-vector 20 0 -2) (float-vector -10 0 2)) *manip-push-tilt*))
-    ))
+    )
+  (push-back *manip-push-tilt* *strategy-manip-list*))
 
 ;; lift up ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun lift-up ()
@@ -126,4 +128,14 @@
   (setq *manip-lift-up* nil)
   (dotimes (i *manip-loop-num*)
     (push-back (list (float-vector 25 0 0) (float-vector 25 0 0) (float-vector 0 -6.7 0) (float-vector 0 -6.7 0)) *manip-lift-up*))
+  (push-back *manip-lift-up* *strategy-manip-list*)
   )
+
+;; all ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun gen-all-strategy ()
+  (gen-pull-slide)
+  (gen-push-slide)
+  (gen-pull-tilt)
+  (gen-push-tilt)
+  (gen-lift-up))
+
