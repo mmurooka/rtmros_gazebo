@@ -29,12 +29,24 @@
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
   )
 
+(defun gen-pull-slide ()
+  (setq *manip-pull-slide* nil)
+  (dotimes (i *manip-loop-num*)
+    (push-back (list (float-vector 10 0 2) (float-vector 10 0 2)) *manip-pull-slide*))
+  )
+
 ;; push slide ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun push-slide ()
   (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
   (send-all *gplist* :add-force2 (float-vector -5 0 -5) (float-vector -5 0 -5))
   (update-draw-contact-loop)
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
+  )
+
+(defun gen-push-slide ()
+  (setq *manip-push-slide* nil)
+  (dotimes (i *manip-loop-num*)
+    (push-back (list (float-vector -5 0 -5) (float-vector -5 0 -5)) *manip-push-slide*))
   )
 
 ;; pull tile ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,6 +71,17 @@
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
   )
 
+(defun gen-pull-tilt ()
+  (setq *manip-pull-tilt* nil)
+  (dotimes (j 1)
+    ;;(dotimes (i (/ *manip-loop-num* 2))
+    (dotimes (i 200)
+      (push-back (list (float-vector -10 0 -2) (float-vector 20 1 2)) *manip-pull-tilt*))
+    ;;(dotimes (i (/ *manip-loop-num* 2))
+    (dotimes (i 300)
+      (push-back (list (float-vector 20 -1 2) (float-vector -10 0 -2)) *manip-pull-tilt*))
+    ))
+
 ;; push tilt ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun push-tilt ()
   (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
@@ -79,6 +102,17 @@
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
   )
 
+(defun gen-push-tilt ()
+  (setq *manip-push-tilt* nil)
+  (dotimes (j 1)
+    ;;(dotimes (i (/ *manip-loop-num* 2))
+    (dotimes (i 200)
+      (push-back (list (float-vector -10 0 2) (float-vector 20 0 -2)) *manip-push-tilt*))
+    ;;(dotimes (i (/ *manip-loop-num* 2))
+    (dotimes (i 300)
+      (push-back (list (float-vector 20 0 -2) (float-vector -10 0 2)) *manip-push-tilt*))
+    ))
+
 ;; lift up ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun lift-up ()
   (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
@@ -86,4 +120,10 @@
   ;;(send-all *gplist* :add-force2 (float-vector 20 0 0) (float-vector 20 0 0) (float-vector 0 -6 0) (float-vector 0 -6 0))
   (update-draw-contact-loop)
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
+  )
+
+(defun gen-lift-up ()
+  (setq *manip-lift-up* nil)
+  (dotimes (i *manip-loop-num*)
+    (push-back (list (float-vector 25 0 0) (float-vector 25 0 0) (float-vector 0 -6.7 0) (float-vector 0 -6.7 0)) *manip-lift-up*))
   )

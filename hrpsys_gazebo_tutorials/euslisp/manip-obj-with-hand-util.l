@@ -29,6 +29,7 @@
   (setq *2dcoord-list* nil)
   (setq *fv-list* nil)
   (setq *manip-dt* 0.002)
+  (setq *manip-loop-num* 500)
   (setq *all-class-data* nil)
   (send *obj* :put :vcont (list nil nil nil nil))
   (send *obj* :put :lcont (list nil nil nil nil))

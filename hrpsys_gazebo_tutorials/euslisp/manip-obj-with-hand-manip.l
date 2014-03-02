@@ -14,19 +14,19 @@
 
   (warn ";; manip ;;;;;;;;;;;;;;;;;~%")
   (warn "(manip)~%")
-  (warn "(manip (elt *manip-list* 0)) ;; play log manip~%")
+  (warn "(manip :manip-input (elt *manip-list* 0)) ;; play log manip~%")
   )
 
 
 ;; manip ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun manip (&optional manip-input)
+(defun manip (&key (manip-input nil) (no-save nil))
 
   ;; init object pose
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
   (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
   (unix::usleep (* 100 1000))
 
-  (let* ((loop-num 500) ;; loop num
+  (let* ((loop-num *manip-loop-num*) ;; loop num
 	 (f1x 0.0) (f1y 0.0) (f1z 0.0)
 	 (f2x 0.0) (f2y 0.0) (f2z 0.0)
 	 (fmax1 30) (fmax2 10) (fmin1 -30) (fmin2 -10) fmax fmin dfmax dfmin
@@ -54,7 +54,10 @@
 	;; add force
 	(cond
 	 (manip-input
-	  (send-all *gplist* :add-force2 (elt (elt manip-input i) 0) (elt (elt manip-input i) 1)))
+	  (cond ((equal (length (elt manip-input i)) 4)
+		 (send-all *gplist* :add-force2 (elt (elt manip-input i) 0) (elt (elt manip-input i) 1) (elt (elt manip-input i) 2) (elt (elt manip-input i) 3)))
+		(t
+		 (send-all *gplist* :add-force2 (elt (elt manip-input i) 0) (elt (elt manip-input i) 1)))))
 	 (t
 	  (send-all *gplist* :add-force2 (float-vector f1x f1y f1z) (float-vector f2x f2y f2z))))
 	;; (warning-message 2 "loop ~d/~d f1:~a f2:~a~%" i loop-num (float-vector f1x f1y f1z) (float-vector f2x f2y f2z))
@@ -100,7 +103,7 @@
       (setq manip-tmp (make-list (- loop-num 1) :initial-element (float-vector 0 0 0)))
       (setq contact-tmp (make-list (- loop-num 1) :initial-element :invalid))
       (setq 2dcoord-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) 0))))
-    (unless manip-input
+    (unless no-save
       (push-back manip-tmp *manip-list*)
       (push-back contact-tmp *contact-list*)
       (push-back 2dcoord-tmp *2dcoord-list*)
