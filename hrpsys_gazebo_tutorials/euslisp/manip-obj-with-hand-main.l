@@ -107,26 +107,28 @@
   ()
 
   ;; init
-  (cond ((boundp *manip-obj-with-hand-init-flag*)
+  (cond ((boundp '*manip-obj-with-hand-init-flag*)
 	 (init-variable))
 	(t (init)))
   ;; loop
   (do-until-key
    (manip))
-  ;; save log
+  ;; save
   (save-variable)
-  ;; plot graph
+  ;; plot
   (plot-all)
   )
 
 (defun main2
   ()
 
-  ;; load log
+  ;; init
+  (init-variable)
+  ;; load
   (load-variable)
-  ;; 
-  (analize)
-  ;;
+  ;; analyze
+  (analyze)
+  ;; plot
   (plot-all-class-data)
   )
 

@@ -13,7 +13,7 @@
   ()
 
   (warn ";; analize ;;;;;;;;;;;;;;;;;~%")
-  (warn "(analize)~%")
+  (warn "(analyze)~%")
   (warn "(calc-feature-value)~%")
   (warn "(classify-feature-value)~%")
   )
@@ -21,7 +21,7 @@
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun analyze
-  (&key (class-num 5))
+  (&key (class-num 3))
 
   (calc-feature-value :output nil)
   (classify-feature-value :class-num class-num))
