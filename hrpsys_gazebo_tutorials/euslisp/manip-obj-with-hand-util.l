@@ -36,6 +36,7 @@
   (setq *manip-cnt* 0)
   (setq *manip-dt* 0.002)
   (setq *manip-loop-num* 500)
+  (setq *update-force-loop-num* 250)
 
   ;; strategy
   (setq *strategy-manip-list* nil)
@@ -88,8 +89,9 @@
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges))
 	 (bottom-vertices-z (mapcar #'(lambda (v) (elt v 2)) bottom-vertices))
 	 bottom-vcont bottom-lcont
-	 ;;(contact-z-thre 1)
-	 (contact-z-thre -0.5))
+	 (contact-z-thre 1)
+	 ;;(contact-z-thre -0.5)
+	 )
     (dotimes (i (length bottom-vertices-z))
       (push-back (< (elt bottom-vertices-z i) contact-z-thre) bottom-vcont)
       )
