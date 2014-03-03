@@ -59,21 +59,34 @@
 
 	  ;; (print (list yaw-vel d-vel xy-unit-vel yaw-unit-vel)) ;; for debug
 
-	  ;; each contact state
-	  (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) yaw-vel))
-	  (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) d-vel))
-	  (setf (elt fv-cor-xy-yaw cont-num) (+ (elt fv-cor-xy-yaw cont-num) cor-xy-yaw))
-	  ;; sum
-	  (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) yaw-vel))
-	  (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) d-vel))
-	  (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) cor-xy-yaw))
+	  (cond ((equal cont-num 0)
+		 ;; each contact state
+		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) 1))
+		 (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) 1))
+		 (setf (elt fv-cor-xy-yaw cont-num) (+ (elt fv-cor-xy-yaw cont-num) 1))
+		 ;; sum
+		 (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) 1))
+		 (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) 1))
+		 (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) 1)))
+		(t
+		 ;; each contact state
+		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) yaw-vel))
+		 (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) d-vel))
+		 (setf (elt fv-cor-xy-yaw cont-num) (+ (elt fv-cor-xy-yaw cont-num) cor-xy-yaw))
+		 ;; sum
+		 (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) yaw-vel))
+		 (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) d-vel))
+		 (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) cor-xy-yaw))))
 	  )))
 
     ;; normalize
     (dotimes (cont-num 4)
-      (setf (elt fv-yaw-vel cont-num) (/ (elt fv-yaw-vel cont-num) (elt fv-yaw-vel 4)))
-      (setf (elt fv-d-vel cont-num) (/ (elt fv-d-vel cont-num) (elt fv-d-vel 4)))
-      (setf (elt fv-cor-xy-yaw cont-num) (/ (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw 4))))
+      (unless (eps= (elt fv-yaw-vel 4) 0.0)
+	(setf (elt fv-yaw-vel cont-num) (/ (elt fv-yaw-vel cont-num) (elt fv-yaw-vel 4))))
+      (unless (eps= (elt fv-d-vel 4) 0.0)
+	(setf (elt fv-d-vel cont-num) (/ (elt fv-d-vel cont-num) (elt fv-d-vel 4))))
+      (unless (eps= (elt fv-cor-xy-yaw 4) 0.0)
+	(setf (elt fv-cor-xy-yaw cont-num) (/ (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw 4)))))
 
     ;; (print (list fv-yaw-vel fv-d-vel fv-cor-xy-yaw)) ;; for debug
 
