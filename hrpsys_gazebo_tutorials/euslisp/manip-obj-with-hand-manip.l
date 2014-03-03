@@ -32,7 +32,7 @@
 	 (fmax1 30) (fmax2 10) (fmin1 -30) (fmin2 -10) fmax fmin dfmax dfmin
 	 ;; (fmax 20) (fmin -20) (dfmax (/ fmax 10.0)) (dfmin (/ fmin 10.0))
 	 manip-tmp contact-tmp 2dcoord-tmp
-	 (fall-down-flag nil))
+	 (fall-down-flag nil) (float-flag nil))
     (dotimes (i loop-num)
       ;; set force
       (setq fmax (+ (random (float (- fmax1 fmax2))) fmax2))
@@ -85,22 +85,35 @@
 	  (push-back (list (float-vector f1x f1y f1z) (float-vector f2x f2y f2z)) manip-tmp)
 	  (push-back (list (send *obj* :get :2d-pos) (send *obj* :get :2d-angle)) 2dcoord-tmp)
 	  (push-back (send *obj* :get :contact) contact-tmp))
-	(when (check-fall-down)
-	  (setq fall-down-flag t)
-	  (return-from nil nil))
+	(unless (equal i 0)
+	  ;; check if the object is floated
+	  (when (equal (send *obj* :get :contact) :nil)
+	    (setq float-flag t)
+	    (return-from nil nil))
+	  ;; check falling down
+	  (when (check-fall-down)
+	    (setq fall-down-flag t)
+	    (return-from nil nil)))
 	(x::window-main-one)
 	(unix::usleep (round (* *manip-dt* 1000 1000)))
 	))
-    (cond (fall-down-flag
+    (cond (float-flag
+	   (warn "~2d : detect floating~%" *manip-cnt*))
+	  (fall-down-flag
 	   (warn "~2d : detect falling down~%" *manip-cnt*))
 	  (t
 	   (let* ((res-eval-list (mapcar #'calc-motion-eval (send-all (send-all *gplist* :get-pose) :copy-worldcoords)))
 		  (res-eval-ave (/ (reduce #'+ res-eval-list) (length res-eval-list))))
 	     (warn "~2d : ~a : ~a~%" *manip-cnt* res-eval-list res-eval-ave)
-	     (push-back (list *manip-cnt* res-eval-list res-eval-ave) manip-tmp))))
-    ;; overwirte with the invalid value when falling down
+	     ;;(push-back (list *manip-cnt* res-eval-list res-eval-ave) manip-tmp)
+	     )))
+    ;; overwirte with the invalid value when falling down or float
+    (when float-flag
+      (setq manip-tmp (append manip-tmp (make-list (- (- loop-num 1) (length manip-tmp)) :initial-element (list (float-vector 0 0 0) (float-vector 0 0 0)))))
+      (setq contact-tmp (append contact-tmp (make-list (- (- loop-num 1) (length contact-tmp)) :initial-element :nil)))
+      (setq 2dcoord-tmp (append 2dcoord-tmp (make-list (- (- loop-num 1) (length 2dcoord-tmp)) :initial-element (list (float-vector 0 0 0) 0)))))
     (when fall-down-flag
-      (setq manip-tmp (make-list (- loop-num 1) :initial-element (float-vector 0 0 0)))
+      (setq manip-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) (float-vector 0 0 0))))
       (setq contact-tmp (make-list (- loop-num 1) :initial-element :invalid))
       (setq 2dcoord-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) 0))))
     (unless no-save
