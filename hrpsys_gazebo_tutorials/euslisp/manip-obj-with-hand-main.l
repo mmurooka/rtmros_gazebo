@@ -152,7 +152,7 @@
   (read-line)
   (unless (analyze)
     (warn "failed classification~%")
-    (return-from main2 nil))
+    (return-from main-strategy nil))
   ;; plot
   (plot-all-class-data)
   )
