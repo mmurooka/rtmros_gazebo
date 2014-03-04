@@ -136,6 +136,24 @@
   (plot-all-class-data)
   )
 
+(defun main3
+  ()
+
+  ;; init
+  (init)
+  ;; load
+  (load-variable)
+  ;; analyze
+  (unless (analyze)
+    (warn "failed classification~%")
+    (return-from main3 nil))
+  (dotimes (i (length (elt *all-class-data* 1)))
+    ;; plot
+    (plot-all-class-data :class-num i :save nil)
+    ;; manip
+    (manip-all-class-data :class-num i))
+  )
+
 (defun main-strategy
   ()
 
