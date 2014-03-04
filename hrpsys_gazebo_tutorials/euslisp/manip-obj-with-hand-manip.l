@@ -26,12 +26,14 @@
   (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
   (unix::usleep (* 100 1000))
 
-  (let* ((loop-num *manip-loop-num*) ;; loop num
+  (let* (loop-num ;; loop num
 	 manip-tmp contact-tmp 2dcoord-tmp
 	 (fall-down-flag nil) (float-flag nil)
 	 flist
 	 (f1 (float-vector 0 0 0)) (f2 (float-vector 0 0 0))
 	 (m1 (float-vector 0 0 0)) (m2 (float-vector 0 0 0)))
+    (cond (manip-input (setq loop-num (length manip-input)))
+	  (t (setq loop-num *manip-loop-num*)))
     (dotimes (i loop-num)
       ;; update force
       (cond
@@ -114,6 +116,24 @@
     (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
     ))
 
+(defun manip-all-class-data
+  (&key (class-num nil))
+
+  (dotimes (i (length (elt *all-class-data* 1)))
+    (when class-num (setq i class-num))
+    (let* ((manip-class-list
+	    (mapcar #'(lambda (x) (cdr (assoc :manip x)))
+		    (elt (elt *all-class-data* 1) i))))
+
+      (dotimes (j (length manip-class-list))
+	(warn "class: ~a/~a  manip: ~a/~a ~%"
+	      (+ i 1) (length (elt *all-class-data* 1)) (+ j 1) (length manip-class-list))
+	(manip :manip-input (elt manip-class-list j) :no-save t))
+      ;; wait
+      (read-line))
+    (when class-num (return-from nil nil))
+    ))
+
 ;; util ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get random force
 (defun get-random-force
@@ -180,7 +200,7 @@
 (defun check-fall-down ;; return t when falling down
   (&optional (c (send *obj* :copy-worldcoords)))
 
-  (let* ((rp-angle-thre (/ pi 5))
+  (let* ((rp-angle-thre (/ pi 10))
 	 (base-vec (float-vector 0 0 1))
 	 (trans-base-vec (send c :rotate-vector base-vec))
 	 (rp-angle (abs (acos (v. base-vec trans-base-vec)))))
