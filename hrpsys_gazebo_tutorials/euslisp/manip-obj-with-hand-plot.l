@@ -22,9 +22,10 @@
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun plot-all-class-data
-  (&key (save t))
+  (&key (save t) (class-num nil))
 
   (dotimes (i (length (elt *all-class-data* 1)))
+    (when class-num (setq i class-num))
     ;; plot
     (plot-contact :data (mapcar #'(lambda (x) (cdr (assoc :contact x))) (elt (elt *all-class-data* 1) i)))
     (plot-2dcoord :data (mapcar #'(lambda (x) (cdr (assoc :2dcoord x))) (elt (elt *all-class-data* 1) i)))
@@ -37,6 +38,7 @@
       (save-plot-contact (format nil "fig/contact-graph-~a.png" i))
       (save-plot-2dcoord (format nil "fig/2dcoord-graph-~a.png" i))
       (read-line))
+    (when class-num (return-from nil nil))
     ))
 
 ;; all ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
