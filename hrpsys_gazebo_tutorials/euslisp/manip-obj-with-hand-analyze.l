@@ -118,23 +118,33 @@
 (defun print-feature-value
   (&key (class-num nil))
 
-  (let* (fv-list)
+  (let* (fv-list eval-list)
     (cond (class-num
-	   (setq fv-list (mapcar #'(lambda (x) (cdr (assoc :fv x))) (elt (elt *all-class-data* 1) class-num))))
+	   (setq fv-list (mapcar #'(lambda (x) (cdr (assoc :fv x))) (elt (elt *all-class-data* 1) class-num)))
+	   (setq eval-list (mapcar #'(lambda (x) (cdr (assoc :eval x))) (elt (elt *all-class-data* 1) class-num))))
 	  (t
-	   (setq fv-list *fv-list*)))
-    (dolist (fv fv-list)
+	   (setq fv-list *fv-list*)
+	   (setq eval-list *eval-list*)))
+    (dotimes (j (length fv-list))
       (warn "--------------------------------------------------------------------~%")
       (warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
 	    "cont\\fv" "fv-yaw" "fv-d" "fv-cor" "fall/float/eval")
       (warn "--------------------------------------------------------------------~%")
-      (dotimes (i (/ (1- (length fv)) 3))
-	(warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
-	      (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum))
-	      (elt fv i)
-	      (elt fv (+ i (/ (1- (length fv)) 3)))
-	      (elt fv (+ i (* (/ (1- (length fv)) 3) 2)))
-	      (if (< (+ i (* (/ (1- (length fv)) 3) 3)) (length fv)) (elt fv (+ i (* (/ (1- (length fv)) 3) 3))) "--"))))
+      (let* ((fv (elt fv-list j))
+	     (eval (elt eval-list j)))
+	(dotimes (i (/ (1- (length fv)) 3))
+	  (warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
+		(case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum))
+		(elt fv i)
+		(elt fv (+ i (/ (1- (length fv)) 3)))
+		(elt fv (+ i (* (/ (1- (length fv)) 3) 2)))
+		(cond ((< (+ i (* (/ (1- (length fv)) 3) 3)) (length fv))
+		       (elt fv (+ i (* (/ (1- (length fv)) 3) 3))))
+		      ((equal i (1- (/ (1- (length fv)) 3)))
+		       eval)
+		      (t
+		       "--"))
+		))))
     (warn "--------------------------------------------------------------------~%")))
 
 ;; classify feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -176,14 +186,19 @@
   (length (elt *all-class-data* 1)))
 
 (defun get-class-eval
-  ()
+  (&key (class-num nil))
 
   (let* (class-eval-list)
     (dolist (class-data (elt *all-class-data* 1))
+      (when class-num
+	(setq class-data (elt (elt *all-class-data* 1) class-num)))
       (let* (class-inside-eval-list class-eval)
 	(setq class-inside-eval-list (mapcar #'(lambda (x) (cdr (assoc :eval x))) class-data))
 	(setq class-eval (/ (reduce #'+ class-inside-eval-list) (length class-inside-eval-list)))
-	(push-back class-eval class-eval-list)
-	))
+	(cond (class-num
+	       (setq class-eval-list class-eval))
+	      (t
+	       (push-back class-eval class-eval-list))))
+      (when class-num (return-from nil nil)))
     class-eval-list
     ))
