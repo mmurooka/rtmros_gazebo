@@ -29,68 +29,74 @@
 
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun calc-feature-value-one
-  (&optional (cont-st (car *contact-list*)) (2d-coord (car *2dcoord-list*)))
+  (&optional (contact (car *contact-list*)) (2dcoord (car *2dcoord-list*)))
 
   (let* ((fv-yaw-vel (make-list 5 :initial-element 0)) ;; yaw velocity
 	 (fv-d-vel (make-list 5 :initial-element 0)) ;; 2d velocity
-	 (fv-cor-xy-yaw (make-list 5 :initial-element 0))) ;; correlation between yaw and 2d
-    (dotimes (i (length cont-st))
+	 (fv-cor-xy-yaw (make-list 5 :initial-element 0)) ;; correlation between yaw and 2d
+	 (fv-fall-down 0) ;; falling down
+	 (fv-float 0) ;; floating
+	 (fv-eval 0) ;; eval
+	 )
+    (dotimes (i (length contact))
       (unless (equal i 0)
-	(let* ((cont (elt cont-st i))
+	(let* ((cont (elt contact i))
 	       (cont-num
 		(cond ((equal cont :face) 3)
 		      ((equal cont :line) 2)
 		      ((equal cont :vertex) 1)
 		      ((equal cont :nil) 0)
-		      ((equal cont :invalid) 0)))
-	       (x-crnt (elt (car (elt 2d-coord i)) 0))
-	       (x-prev (elt (car (elt 2d-coord (- i 1))) 0))
-	       (y-crnt (elt (car (elt 2d-coord i)) 1))
-	       (y-prev (elt (car (elt 2d-coord (- i 1))) 1))
+		      ((equal cont :invalid) -1)))
+	       (x-crnt (elt (car (elt 2dcoord i)) 0))
+	       (x-prev (elt (car (elt 2dcoord (- i 1))) 0))
+	       (y-crnt (elt (car (elt 2dcoord i)) 1))
+	       (y-prev (elt (car (elt 2dcoord (- i 1))) 1))
 	       (xy-vel (float-vector (- x-crnt x-prev) (- y-crnt y-prev)))
 	       (d-vel (abs (/ (norm xy-vel) *manip-dt*)))
 	       (d-vel-thre 0.1)
+	       (d-vel-new (if (> d-vel d-vel-thre) d-vel 0))
 	       (xy-unit-vel (if (< d-vel d-vel-thre) (float-vector 0 0) (normalize-vector xy-vel)))
-	       (yaw-crnt (cadr (elt 2d-coord i)))
-	       (yaw-prev (cadr (elt 2d-coord (- i 1))))
+	       (yaw-crnt (cadr (elt 2dcoord i)))
+	       (yaw-prev (cadr (elt 2dcoord (- i 1))))
 	       (yaw-vel (abs (/ (- yaw-crnt yaw-prev) *manip-dt*)))
+	       (yaw-vel-thre 0.1)
+	       (yaw-vel-new (if (> yaw-vel yaw-vel-thre) yaw-vel 0))
 	       (yaw-unit-vel (float-vector (cos yaw-crnt) (sin yaw-crnt)))
-	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel))))
+	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel)))
+	       (float-max 500)
+	       (fall-down-max 500)
+	       )
 
 	  ;; (print (list yaw-vel d-vel xy-unit-vel yaw-unit-vel)) ;; for debug
-	  (cond ((equal cont-num 0)
+	  (cond ((equal cont-num -1) ;; when falling down
+		 (setq fv-fall-down (min (+ fv-fall-down 10) fall-down-max)))
+		((equal cont-num 0) ;; when floating
 		 ;; each contact state
-		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) 1))
-		 (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) 1))
-		 (setf (elt fv-cor-xy-yaw cont-num) (+ (elt fv-cor-xy-yaw cont-num) 1))
-		 ;; sum
-		 (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) 1))
-		 (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) 1))
-		 (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) 1)))
-		(t
+		 (setq fv-float (min (+ fv-float 10) float-max)))
+		((>= cont-num 0)
 		 ;; each contact state
-		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) yaw-vel))
-		 (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) d-vel))
+		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) yaw-vel-new))
+		 (setf (elt fv-d-vel cont-num) (+ (elt fv-d-vel cont-num) d-vel-new))
 		 (setf (elt fv-cor-xy-yaw cont-num) (+ (elt fv-cor-xy-yaw cont-num) cor-xy-yaw))
 		 ;; sum
 		 (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) yaw-vel))
 		 (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) d-vel))
 		 (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) cor-xy-yaw))))
 	  )))
+    (setq fv-eval (calc-manip-eval (car (last contact)) (car (last 2dcoord))))
 
-    ;; normalize
+    ;; square root instead of normalize
     (dotimes (cont-num 4)
-      (unless (eps= (elt fv-yaw-vel 4) 0.0)
-    	(setf (elt fv-yaw-vel cont-num) (/ (elt fv-yaw-vel cont-num) (elt fv-yaw-vel 4))))
-      (unless (eps= (elt fv-d-vel 4) 0.0)
-    	(setf (elt fv-d-vel cont-num) (/ (elt fv-d-vel cont-num) (elt fv-d-vel 4))))
-      (unless (eps= (elt fv-cor-xy-yaw 4) 0.0)
-    	(setf (elt fv-cor-xy-yaw cont-num) (/ (elt fv-cor-xy-yaw cont-num) (/ (length cont-st) 2.0)))))
+      (setf (elt fv-yaw-vel cont-num) (sqrt (elt fv-yaw-vel cont-num)))
+      (setf (elt fv-d-vel cont-num) (sqrt (elt fv-d-vel cont-num)))
+      (setf (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw cont-num))
+      ;;(setq fv-float (sqrt fv-float))
+      ;;(setq fv-fall-down (sqrt fv-fall-down))
+      )
 
-    ;; (print (list fv-yaw-vel fv-d-vel fv-cor-xy-yaw)) ;; for debug
-
-    (concatenate float-vector (append (subseq fv-yaw-vel 0 4) (subseq fv-d-vel  0 4) (subseq fv-cor-xy-yaw 0 4)))
-    ;;(concatenate float-vector (append (subseq fv-yaw-vel 0 4) (subseq fv-d-vel  0 4) (list 0 0) (subseq fv-cor-xy-yaw 2 4)))
+    (list
+     (concatenate float-vector (append (subseq fv-yaw-vel 0 4) (subseq fv-d-vel  0 4) (subseq fv-cor-xy-yaw 0 4) (list fv-fall-down fv-float))) ;; exclude sum
+     fv-eval)
     ;;(concatenate float-vector (append fv-yaw-vel fv-d-vel (list 0 0) (subseq fv-cor-xy-yaw 2))) ;; include sum
     ))
 
@@ -98,27 +104,38 @@
   (&key (output t))
 
   (setq *fv-list* nil)
+  (setq *eval-list* nil)
   (dotimes (i (length *contact-list*))
-    (let*
-	((cont-st (elt *contact-list* i))
-	 (2d-coord (elt *2dcoord-list* i)))
-      (push-back (calc-feature-value-one cont-st 2d-coord) *fv-list*)))
+    (let* ((contact (elt *contact-list* i))
+	   (2dcoord (elt *2dcoord-list* i))
+	   (fv-eval-list (calc-feature-value-one contact 2dcoord)))
+      (push-back (elt fv-eval-list 0) *fv-list*)
+      (push-back (elt fv-eval-list 1) *eval-list*)))
   (when output
     (print-feature-value))
   )
 
 (defun print-feature-value
-  ()
+  (&key (class-num nil))
 
-  (dolist (fv *fv-list*)
-    (warn "----------------------------------------------------------------~%")
-    (warn " ~10a  ~16a  ~16a  ~16a~%"
-	  "cont\\fv" "fv-yaw-vel" "fv-d-vel" "fv-cor-xy-yaw")
-    (warn "----------------------------------------------------------------~%")
-    (dotimes (i (/ (length  fv) 3))
-      (warn " ~10a  ~16a  ~16a  ~16a~%"
-	    (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum)) (elt fv i) (elt fv (+ i (/ (length  fv) 3))) (elt fv (+ i (* (/ (length  fv) 3) 2))))))
-  (warn "----------------------------------------------------------------~%"))
+  (let* (fv-list)
+    (cond (class-num
+	   (setq fv-list (mapcar #'(lambda (x) (cdr (assoc :fv x))) (elt (elt *all-class-data* 1) class-num))))
+	  (t
+	   (setq fv-list *fv-list*)))
+    (dolist (fv fv-list)
+      (warn "--------------------------------------------------------------------~%")
+      (warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
+	    "cont\\fv" "fv-yaw" "fv-d" "fv-cor" "fall/float/eval")
+      (warn "--------------------------------------------------------------------~%")
+      (dotimes (i (/ (1- (length fv)) 3))
+	(warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
+	      (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum))
+	      (elt fv i)
+	      (elt fv (+ i (/ (1- (length fv)) 3)))
+	      (elt fv (+ i (* (/ (1- (length fv)) 3) 2)))
+	      (if (< (+ i (* (/ (1- (length fv)) 3) 3)) (length fv)) (elt fv (+ i (* (/ (1- (length fv)) 3) 3))) "--"))))
+    (warn "--------------------------------------------------------------------~%")))
 
 ;; classify feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun classify-feature-value
@@ -127,7 +144,46 @@
   ;; (load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
   (setq *all-orig-data* nil)
   (dotimes (i (length *fv-list*))
-    (push-back (list (cons :manip (elt *manip-list* i)) (cons :contact (elt *contact-list* i)) (cons :2dcoord (elt *2dcoord-list* i)) (cons :fv (elt *fv-list* i)))
+    (push-back (list (cons :manip (elt *manip-list* i))
+		     (cons :contact (elt *contact-list* i))
+		     (cons :2dcoord (elt *2dcoord-list* i))
+		     (cons :fv (elt *fv-list* i))
+		     (cons :eval (elt *eval-list* i)))
 	       *all-orig-data*))
   (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
   nil)
+
+;; evaluate class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; calc eval value
+(defun calc-manip-eval
+  (contact 2dcoord)
+
+  (let* ((dist (norm (subseq (car 2dcoord) 0 2)))
+	 (dist-score 0)
+	 (falling-down-score 0)
+	 (float-score 0))
+    (setq dist-score (* dist 100))
+    (cond ((equal contact :invalid)
+	   (setq falling-down-score -100))
+	  ((equal contact :nil)
+	   (setq float-score 100)))
+    (+ dist-score falling-down-score float-score)
+    ))
+
+(defun get-class-num
+  ()
+
+  (length (elt *all-class-data* 1)))
+
+(defun get-class-eval
+  ()
+
+  (let* (class-eval-list)
+    (dolist (class-data (elt *all-class-data* 1))
+      (let* (class-inside-eval-list class-eval)
+	(setq class-inside-eval-list (mapcar #'(lambda (x) (cdr (assoc :eval x))) class-data))
+	(setq class-eval (/ (reduce #'+ class-inside-eval-list) (length class-inside-eval-list)))
+	(push-back class-eval class-eval-list)
+	))
+    class-eval-list
+    ))
