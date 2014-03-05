@@ -49,7 +49,7 @@
 	       (y-prev (elt (car (elt 2d-coord (- i 1))) 1))
 	       (xy-vel (float-vector (- x-crnt x-prev) (- y-crnt y-prev)))
 	       (d-vel (abs (/ (norm xy-vel) *manip-dt*)))
-	       (d-vel-thre 1)
+	       (d-vel-thre 0.1)
 	       (xy-unit-vel (if (< d-vel d-vel-thre) (float-vector 0 0) (normalize-vector xy-vel)))
 	       (yaw-crnt (cadr (elt 2d-coord i)))
 	       (yaw-prev (cadr (elt 2d-coord (- i 1))))
@@ -58,7 +58,6 @@
 	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel))))
 
 	  ;; (print (list yaw-vel d-vel xy-unit-vel yaw-unit-vel)) ;; for debug
-
 	  (cond ((equal cont-num 0)
 		 ;; each contact state
 		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) 1))
@@ -82,11 +81,11 @@
     ;; normalize
     (dotimes (cont-num 4)
       (unless (eps= (elt fv-yaw-vel 4) 0.0)
-	(setf (elt fv-yaw-vel cont-num) (/ (elt fv-yaw-vel cont-num) (elt fv-yaw-vel 4))))
+    	(setf (elt fv-yaw-vel cont-num) (/ (elt fv-yaw-vel cont-num) (elt fv-yaw-vel 4))))
       (unless (eps= (elt fv-d-vel 4) 0.0)
-	(setf (elt fv-d-vel cont-num) (/ (elt fv-d-vel cont-num) (elt fv-d-vel 4))))
+    	(setf (elt fv-d-vel cont-num) (/ (elt fv-d-vel cont-num) (elt fv-d-vel 4))))
       (unless (eps= (elt fv-cor-xy-yaw 4) 0.0)
-	(setf (elt fv-cor-xy-yaw cont-num) (/ (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw 4)))))
+    	(setf (elt fv-cor-xy-yaw cont-num) (/ (elt fv-cor-xy-yaw cont-num) (/ (length cont-st) 2.0)))))
 
     ;; (print (list fv-yaw-vel fv-d-vel fv-cor-xy-yaw)) ;; for debug
 
