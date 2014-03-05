@@ -22,7 +22,7 @@
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun plot-all-class-data
-  (&key (save t) (class-num nil))
+  (&key (save nil) (class-num nil))
 
   (dotimes (i (length (elt *all-class-data* 1)))
     (when class-num (setq i class-num))
@@ -100,7 +100,10 @@
   (let* ((plot-file-name "log/tmp-log-for-plot-2dcoord.txt")
 	 (plot-log-stream
 	  (open plot-file-name :direction :output))
-	 (plot-vect-interval 20))
+	 (plot-point-interval 40)
+	 ;;(plot-vect-interval 20)
+	 (plot-vect-interval 1000)
+	 )
     (dotimes (i (length (car data)))
       (format plot-log-stream "~a" i)
       (dotimes (j (length data))
@@ -117,13 +120,13 @@
     (close plot-log-stream)
     (send *gnuplot-2dcoord* :command "set key outside")
     (send *gnuplot-2dcoord* :command "set grid")
-    (send *gnuplot-2dcoord* :command "set xrange [-5:5]")
-    (send *gnuplot-2dcoord* :command "set yrange [-5:5]")
+    (send *gnuplot-2dcoord* :command "set xrange [-1.5:1.5]")
+    (send *gnuplot-2dcoord* :command "set yrange [-1.5:1.5]")
     (cond (with-title
-	   (send *gnuplot-2dcoord* :command (format nil "plot \"~a\" u ~a:~a with line lw 5 title \"1\"" plot-file-name 2 3))
+	   (send *gnuplot-2dcoord* :command (format nil "plot \"~a\" u ~a:~a every ~a with line lw 5 title \"1\"" plot-file-name 2 3 plot-point-interval))
 	   (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a:~a:~a every ~a with vector title \"1\"" plot-file-name 2 3 4 5 plot-vect-interval)))
 	  (t
-	   (send *gnuplot-2dcoord* :command (format nil "plot \"~a\" u ~a:~a with line lw 5 notitle" plot-file-name 2 3))
+	   (send *gnuplot-2dcoord* :command (format nil "plot \"~a\" u ~a:~a every ~a with line lw 5 notitle" plot-file-name 2 3 plot-point-interval))
 	   (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a:~a:~a every ~a with vector notitle" plot-file-name 2 3 4 5 plot-vect-interval))))
     (when (> (length data) 1)
       (dotimes (j (length data))
@@ -132,13 +135,13 @@
     	    (warn "press any key for plotting next line~%")
     	    (read-line))
 	  (cond (with-title
-		 (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a with line lw 5 title \"~a\""
-							  plot-file-name (+ (* j 4) 2) (+ (* j 4) 3) (+ j 1)))
+		 (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a every ~a with line lw 5 title \"~a\""
+							  plot-file-name (+ (* j 4) 2) (+ (* j 4) 3) plot-point-interval (+ j 1)))
 		 (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a:~a:~a every ~a with vector title \"~a\""
 							  plot-file-name (+ (* j 4) 2) (+ (* j 4) 3) (+ (* j 4) 4) (+ (* j 4) 5) plot-vect-interval (+ j 1))))
 		(t
-		 (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a with line lw 5 notitle"
-							  plot-file-name (+ (* j 4) 2) (+ (* j 4) 3)))
+		 (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a every ~a with line lw 5 notitle"
+							  plot-file-name (+ (* j 4) 2) (+ (* j 4) 3) plot-point-interval))
 		 (send *gnuplot-2dcoord* :command (format nil "replot \"~a\" u ~a:~a:~a:~a every ~a with vector notitle"
 							  plot-file-name (+ (* j 4) 2) (+ (* j 4) 3) (+ (* j 4) 4) (+ (* j 4) 5) plot-vect-interval))))
 
