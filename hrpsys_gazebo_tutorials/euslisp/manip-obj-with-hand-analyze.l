@@ -162,8 +162,9 @@
 	       *all-orig-data*))
   (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
   ;; sort result depending on element number
-  (setf (elt *all-class-data* 1)
-	(sort (elt *all-class-data* 1) #'(lambda (x y) (<= (length x) (length y)))))
+  (unless (equal *all-class-data* :error)
+    (setf (elt *all-class-data* 1)
+	  (sort (elt *all-class-data* 1) #'(lambda (x y) (<= (length x) (length y))))))
   nil)
 
 ;; evaluate class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
