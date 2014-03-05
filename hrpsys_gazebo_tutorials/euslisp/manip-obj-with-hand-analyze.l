@@ -161,6 +161,9 @@
 		     (cons :eval (elt *eval-list* i)))
 	       *all-orig-data*))
   (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
+  ;; sort result depending on element number
+  (setf (elt *all-class-data* 1)
+	(sort (elt *all-class-data* 1) #'(lambda (x y) (<= (length x) (length y)))))
   nil)
 
 ;; evaluate class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -180,17 +183,44 @@
     (+ dist-score falling-down-score float-score)
     ))
 
+;; print class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun print-class-info
+  (&key (class-num nil) (class-inside-eval-list-flag nil))
+
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  (warn " ~10a  ~10a  ~10a  ~20a~%"
+	"id\\value" "elem" "eval" "eval-list")
+  (dotimes (i (length (elt *all-class-data* 1)))
+    (let* (class-data
+	   class-elem-num class-eval class-inside-eval-list)
+      (when class-num ;; when class-num is specified, overwrite with specified num
+	(setq i class-num))
+      (setq class-data (elt (elt *all-class-data* 1) i))
+      (setq class-elem-num (length class-data))
+      (setq class-eval (get-class-eval :class-num i))
+      (setq class-inside-eval-list
+	    (mapcar #'(lambda (x) (cdr (assoc :eval x))) class-data))   
+      (warn " ~10a  ~10a  ~10a  ~10a~%"
+	    i class-elem-num class-eval
+	    (cond (class-inside-eval-list-flag
+		   class-inside-eval-list)
+		  (t
+		   nil)))
+      (when class-num (return-from nil nil))))
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  )
+
 (defun get-class-num
   ()
 
-  (length (elt *all-class-data* 1)))
+  (elt *all-class-data* 1))
 
 (defun get-class-eval
   (&key (class-num nil))
 
   (let* (class-eval-list)
     (dolist (class-data (elt *all-class-data* 1))
-      (when class-num
+      (when class-num ;; when class-num is specified, overwrite with specified class
 	(setq class-data (elt (elt *all-class-data* 1) class-num)))
       (let* (class-inside-eval-list class-eval)
 	(setq class-inside-eval-list (mapcar #'(lambda (x) (cdr (assoc :eval x))) class-data))

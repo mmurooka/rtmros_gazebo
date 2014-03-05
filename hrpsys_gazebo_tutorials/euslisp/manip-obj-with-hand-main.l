@@ -135,6 +135,7 @@
   (dotimes (i (length (elt *all-class-data* 1)))
     ;; print
     (print-feature-value :class-num i)
+    (print-class-info :class-num i)
     ;; plot
     (plot-all-class-data :class-num i :save nil)
     ))
@@ -153,6 +154,7 @@
   (dotimes (i (length (elt *all-class-data* 1)))
     ;; plot
     (plot-all-class-data :class-num i :save nil)
+    (print-class-info :class-num i)
     ;; manip
     (manip-all-class-data :class-num i))
   )
