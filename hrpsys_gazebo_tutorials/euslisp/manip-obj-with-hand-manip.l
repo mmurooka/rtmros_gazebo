@@ -94,20 +94,20 @@
 	  (fall-down-flag
 	   (warn "~2d : detect falling down~%" *manip-cnt*))
 	  (t
-	   (let* ((res-eval-list (mapcar #'calc-motion-eval (send-all (send-all *gplist* :get-pose) :copy-worldcoords)))
-		  (res-eval-ave (/ (reduce #'+ res-eval-list) (length res-eval-list))))
-	     (warn "~2d : ~a : ~a~%" *manip-cnt* res-eval-list res-eval-ave)
-	     ;;(push-back (list *manip-cnt* res-eval-list res-eval-ave) manip-tmp)
-	     )))
+	   (warn "~2d : finished manipulation~%" *manip-cnt*)))
     ;; overwirte with the invalid value when falling down or float
     (when float-flag
       (setq manip-tmp (append manip-tmp (make-list (- (- loop-num 1) (length manip-tmp)) :initial-element (list (float-vector 0 0 0) (float-vector 0 0 0)))))
       (setq contact-tmp (append contact-tmp (make-list (- (- loop-num 1) (length contact-tmp)) :initial-element :nil)))
-      (setq 2dcoord-tmp (append 2dcoord-tmp (make-list (- (- loop-num 1) (length 2dcoord-tmp)) :initial-element (list (float-vector 0 0 0) 0)))))
+      (setq 2dcoord-tmp (append 2dcoord-tmp (make-list (- (- loop-num 1) (length 2dcoord-tmp))
+						       :initial-element (list (concatenate float-vector (send *obj* :get :2d-pos) (float-vector 0))
+									      (send *obj* :get :2d-angle))))))
     (when fall-down-flag
-      (setq manip-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) (float-vector 0 0 0))))
-      (setq contact-tmp (make-list (- loop-num 1) :initial-element :invalid))
-      (setq 2dcoord-tmp (make-list (- loop-num 1) :initial-element (list (float-vector 0 0 0) 0))))
+      (setq manip-tmp (append manip-tmp (make-list (- (- loop-num 1) (length manip-tmp)) :initial-element (list (float-vector 0 0 0) (float-vector 0 0 0)))))
+      (setq contact-tmp (append contact-tmp (make-list (- (- loop-num 1) (length contact-tmp)) :initial-element :invalid)))
+      (setq 2dcoord-tmp (append 2dcoord-tmp (make-list (- (- loop-num 1) (length 2dcoord-tmp))
+						       :initial-element (list (concatenate float-vector (send *obj* :get :2d-pos) (float-vector 0))
+									      (send *obj* :get :2d-angle))))))
     (unless no-save
       (push-back manip-tmp *manip-list*)
       (push-back contact-tmp *contact-list*)
@@ -181,20 +181,6 @@
       (setq f2 (float-vector f2x f2y f2z))
       (list f1 f2)
       )))
-
-;; calc eval value
-(defun calc-motion-eval (c)
-
-  (let* ((x-dist (elt (send c :worldpos) 0))
-	 (x-dist-eval (/ x-dist 1000.0))
-	 (base-vec (float-vector 0 0 1))
-	 (trans-base-vec (send c :rotate-vector base-vec))
-	 (rp-angle (acos (v. base-vec trans-base-vec)))
-	 (rp-angle-eval (if (< (abs rp-angle) (/ pi 10)) 0 (* (+ rp-angle 1) (+ rp-angle 1))))
-	 (yaw-angle (elt (car (send (send (send c :copy-worldcoords) :rotate pi :z) :rpy-angle)) 0))
-	 (yaw-angle-eval (if (< (abs yaw-angle) pi/2) 0 (abs yaw-angle))))
-    (+ x-dist-eval (- rp-angle-eval) (- yaw-angle-eval))
-    ))
 
 ;; check falling down
 (defun check-fall-down ;; return t when falling down
