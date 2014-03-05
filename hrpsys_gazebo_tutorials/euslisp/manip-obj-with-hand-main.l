@@ -122,29 +122,32 @@
   )
 
 (defun main2
-  ()
+  (&optional (class-num 3) (no-analyze nil))
 
   ;; init
   (init)
   ;; load
   (load-variable)
   ;; analyze
-  (unless (analyze)
+  (unless (analyze :class-num class-num)
     (warn "failed classification~%")
     (return-from main2 nil))
-  ;; plot
-  (plot-all-class-data)
-  )
+  (dotimes (i (length (elt *all-class-data* 1)))
+    ;; print
+    (print-feature-value :class-num i)
+    ;; plot
+    (plot-all-class-data :class-num i :save nil)
+    ))
 
 (defun main3
-  ()
+  (&optional (class-num 3))
 
   ;; init
   (init)
   ;; load
   (load-variable)
   ;; analyze
-  (unless (analyze)
+  (unless (analyze :class-num class-num)
     (warn "failed classification~%")
     (return-from main3 nil))
   (dotimes (i (length (elt *all-class-data* 1)))
@@ -174,3 +177,4 @@
   ;; plot
   (plot-all-class-data)
   )
+ 
