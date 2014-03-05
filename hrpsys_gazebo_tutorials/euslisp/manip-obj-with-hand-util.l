@@ -25,6 +25,7 @@
 
   ;; result
   (setq *manip-list* nil)
+  (setq *eval-list* nil)
   (setq *contact-list* nil)
   (setq *2dcoord-list* nil)
   (setq *fv-list* nil)
