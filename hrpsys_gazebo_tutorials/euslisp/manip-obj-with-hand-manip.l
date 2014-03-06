@@ -104,7 +104,8 @@
 									      (send *obj* :get :2d-angle))))))
     (when fall-down-flag
       (setq manip-tmp (append manip-tmp (make-list (- (- loop-num 1) (length manip-tmp)) :initial-element (list (float-vector 0 0 0) (float-vector 0 0 0)))))
-      (setq contact-tmp (append contact-tmp (make-list (- (- loop-num 1) (length contact-tmp)) :initial-element :invalid)))
+      (setq contact-tmp (make-list (- loop-num 1) :initial-element :invalid))
+      ;;(setq contact-tmp (append contact-tmp (make-list (- (- loop-num 1) (length contact-tmp)) :initial-element :invalid)))
       (setq 2dcoord-tmp (append 2dcoord-tmp (make-list (- (- loop-num 1) (length 2dcoord-tmp))
 						       :initial-element (list (concatenate float-vector (send *obj* :get :2d-pos) (float-vector 0))
 									      (send *obj* :get :2d-angle))))))
