@@ -28,6 +28,7 @@
   (not (equal *all-class-data* :error)))
 
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; calc
 (defun calc-feature-value-one
   (&optional (contact (car *contact-list*)) (2dcoord (car *2dcoord-list*)))
 
@@ -116,6 +117,7 @@
     (print-feature-value))
   )
 
+;; print
 (defun print-feature-value
   (&key (class-num nil) (obj-num nil) (manip-num nil))
 
@@ -175,7 +177,7 @@
   nil)
 
 ;; evaluate ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; calc eval value
+;; calc
 (defun calc-manip-eval
   (contact 2dcoord)
 
@@ -208,6 +210,51 @@
       (when class-num (return-from nil nil)))
     class-eval-list
     ))
+
+;; print
+(defun print-manip-eval
+  (&key (obj-num nil) (manip-num nil))
+
+  ;; print first line
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  (warn "~8a|" "mnp\\obj")
+  (dotimes (j (length (elt *eval-list* 0))) ;; obj
+    (when obj-num (setq j obj-num)) ;; when obj is specified
+    (warn "    ~8a" j)
+    (when obj-num (return-from nil nil)) ;; when obj is specified
+    )
+  (warn "    ~8a" "ave")
+  (warn "~%")
+  (warn "--------------------------------------------------------------------~%")
+  ;; print data
+  (dotimes (i (length *eval-list*)) ;; manip
+    (when manip-num (setq i manip-num)) ;; when manip is specified
+    (warn "~8a|" i)
+    (dotimes (j (length (elt *eval-list* 0))) ;; obj
+      (when obj-num (setq j obj-num)) ;; when obj is specified
+      (warn "    ~8a" (elt (elt *eval-list* i) j))
+      (when obj-num (return-from nil nil)) ;; when obj is specified
+      )
+    (let* (manip-eval-list manip-eval)
+      (setq manip-eval-list (elt *eval-list* i))
+      (setq manip-eval (/ (reduce #'+ manip-eval-list) (length manip-eval-list)))
+      (warn "    ~8a" manip-eval))
+    (warn "~%")
+    (when manip-num (return-from nil nil)) ;; when manip is specified
+    )
+  ;; print obj ave
+  (warn "~8a|" "ave")
+  (dotimes (j (length (elt *eval-list* 0))) ;; obj
+    (when obj-num (setq j obj-num)) ;; when obj is specified
+    (let* (obj-eval-list obj-eval manip-eval-list manip-eval)
+      (setq obj-eval-list (mapcar #'(lambda (x) (elt x j)) *eval-list*))
+      (setq obj-eval (/ (reduce #'+ obj-eval-list) (length obj-eval-list)))
+      (warn "    ~8a" obj-eval))
+    (when obj-num (return-from nil nil)) ;; when obj is specified
+    )
+  (warn "~%")
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  )
 
 ;; print info ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; obj
