@@ -25,7 +25,10 @@
 
   (calc-feature-value :output nil)
   (classify-feature-value :class-num class-num)
-  (not (equal *all-class-data* :error)))
+  (when (equal *all-class-data* :error)
+    (return-from analyze nil nil))
+  (update-class-list)
+  t)
 
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; calc
@@ -130,8 +133,8 @@
 		       (cons :2dcoord (elt (elt *2dcoord-list* i) j))
 		       (cons :eval (elt (elt *eval-list* i) j))
 		       (cons :fv (elt (elt *fv-list* i) j))
-		       (cons :obj j)
-		       (cons :manip i)
+		       (cons :obj-id j)
+		       (cons :manip-id i)
 		       )
 		 *all-orig-data*)))
   ;; classify
@@ -176,4 +179,21 @@
 	       (push-back class-eval class-eval-list))))
       (when class-num (return-from nil nil)))
     class-eval-list
+    ))
+
+;; update class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun update-class-list
+  ()
+
+  (setq *class-list* (make-list (length *eval-list*))) ;; manip length
+  (dotimes (i (length *class-list*))
+    (setf (elt *class-list* i) (make-list (length (elt *eval-list* 0))))) ;; obj length
+  (let* ((class-data-list (elt *all-class-data* 1))
+	 (class-num (length class-data-list)))
+    (dotimes (i class-num)
+      (dolist (class-data (elt class-data-list i))
+	(let* ((obj-id (cdr (assoc :obj-id class-data)))
+	       (manip-id (cdr (assoc :manip-id class-data))))
+	  (setf (elt (elt *class-list* manip-id) obj-id) i)
+	  )))
     ))

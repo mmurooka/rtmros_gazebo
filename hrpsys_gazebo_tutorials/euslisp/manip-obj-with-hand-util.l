@@ -29,9 +29,12 @@
   (setq *2dcoord-list* nil)
   (setq *eval-list* nil)
   (setq *fv-list* nil)
+  (setq *class-list* nil)
 
   ;; final result
+  (setq *all-orig-data* nil)
   (setq *all-class-data* nil)
+  (setq *class-eval* nil)
 
   ;; manip meta parameter
   (setq *manip-cnt* 0)
