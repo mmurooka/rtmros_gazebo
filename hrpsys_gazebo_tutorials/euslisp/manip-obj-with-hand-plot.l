@@ -50,7 +50,7 @@
 
 ;; contact ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun plot-contact
-  (&key (data *contact-list*) (wait nil) (with-title nil))
+  (&key (data *contact-list*) (obj-num nil) (manip-num nil) (wait nil) (with-title nil))
   
   ;; init graph
   (unless (boundp '*gnuplot-contact*)
@@ -58,37 +58,43 @@
 
   (let* ((plot-file-name "log/tmp-log-for-plot-contact.txt")
 	 (plot-log-stream
-	  (open plot-file-name :direction :output)))
-    (dotimes (i (length (car data)))
+	  (open plot-file-name :direction :output))
+	 (data-num-tmp 0) (data-num nil))
+    (dotimes (i (length (elt (elt data 0) 0))) ;; time
       (format plot-log-stream "~a" i)
-      (dotimes (j (length data))
-	(let* ((cont (elt (elt data j) i))
-	       (cont-num
-		(cond ((equal cont :face) 3)
-		      ((equal cont :line) 2)
-		      ((equal cont :vertex) 1)
-		      ((equal cont :nil) 0)
-		      ((equal cont :invalid) 4))))
-	  (format plot-log-stream " ~a" cont-num)))
+      (dotimes (j (length data)) ;; manip
+	(when manip-num (setq j manip-num)) ;; when manip is specified
+	(dotimes (k (length (elt data 0))) ;; obj
+	  (when obj-num (setq k obj-num)) ;; when obj is specified
+	  (let* ((cont (elt (elt (elt data j) k) i))
+		 (cont-num
+		  (cond ((equal cont :face) 3)
+			((equal cont :line) 2)
+			((equal cont :vertex) 1)
+			((equal cont :nil) 0)
+			((equal cont :invalid) 4))))
+	    (format plot-log-stream " ~a" cont-num))
+	  (setq data-num-tmp (+ data-num-tmp 1))
+	  (when obj-num (return-from nil nil)) ;; when obj is specified
+	  )
+	(when manip-num (return-from nil nil)) ;; when manip is specified
+	)
       (format plot-log-stream "~%")
+      (unless data-num (setq data-num data-num-tmp))
       )
     (close plot-log-stream)
     (send *gnuplot-contact* :command "set key outside")
     (send *gnuplot-contact* :command "set yrange [4.5:-0.5]")
-    (cond (with-title (send *gnuplot-contact* :command (format nil "plot \"~a\" u 1:2 with line lw 5 title \"1\"" plot-file-name)))
-	  (t (send *gnuplot-contact* :command (format nil "plot \"~a\" u 1:2 with line lw 5 notitle" plot-file-name))))
-    (when (> (length data) 1)
-      (dotimes (j (length data))
-	(unless (equal j 0)
-	  (when wait
-	    (warn "press any key for plotting next line~%")
-	    (read-line))
-	  (cond (with-title (send *gnuplot-contact* :command (format nil "replot \"~a\" u 1:~a with line lw 5 title \"~a\"" plot-file-name (+ j 2) (+ j 1))))
-		(t (send *gnuplot-contact* :command (format nil "replot \"~a\" u 1:~a with line lw 5 notitle" plot-file-name (+ j 2)))))
-	  )))
-    ;;(warn "press [Y] key for delete plotting window~%")
-    ;;(while (not (y-or-n-p)))
-    ;;(send *gnuplot-contact* :quit)
+    (dotimes (j data-num)
+      (cond (with-title (send *gnuplot-contact* :command (format nil "~aplot \"~a\" u 1:~a with line lw 5 title \"~a\""
+								 (if (equal j 0) "" "re") plot-file-name (+ j 2) (+ j 1))))
+	    (t (send *gnuplot-contact* :command (format nil "~aplot \"~a\" u 1:~a with line lw 5 notitle"
+							(if (equal j 0) "" "re") plot-file-name (+ j 2)))
+	       (format t "~aplot \"~a\" u 1:~a with line lw 5 notitle~%"
+							(if (equal j 0) "" "re") plot-file-name (+ j 2))))
+      (when wait
+	(warn "press any key for plotting next line~%")
+	(read-line)))
     ))
 
 ;; 2dcoord ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
