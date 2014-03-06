@@ -30,9 +30,6 @@
   (setq *eval-list* nil)
   (setq *fv-list* nil)
 
-  (setq *contact-list-list* nil)
-  (setq *2dcoord-list-list* nil)
-
   ;; final result
   (setq *all-class-data* nil)
 
@@ -74,10 +71,11 @@
 ;; update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; obj coord
 (defun update-coord-cupboard
-  ()
+  (&key (update-flag nil))
 
   (dotimes (i (length *objlist*))
-    (update-coord-cupboard-one :obj (elt *objlist* i) :gp (elt *gplist* i)))
+    (when (or (not update-flag) (elt update-flag i))
+    (update-coord-cupboard-one :obj (elt *objlist* i) :gp (elt *gplist* i))))
   )
 
 (defun update-coord-cupboard-one
@@ -119,13 +117,13 @@
     (send right-ar :newcoords (send (send (send (send f2coord :copy-worldcoords) :rotate -pi/2 :z) :rotate 0 :x) :translate (float-vector 0 l2 0) :local))
     ))
 
-
 ;; contact
 (defun update-contact-cupboard
-  ()
+  (&key (update-flag nil))
 
-  (dolist (obj *objlist*)
-    (update-contact-cupboard-one :obj obj))
+  (dotimes (i (length *objlist*))
+    (when (or (not update-flag) (elt update-flag i))
+      (update-contact-cupboard-one :obj (elt *objlist* i))))
   )
 
 (defun update-contact-cupboard-one
