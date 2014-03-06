@@ -37,6 +37,7 @@
   (usage-generate)
   (usage-manip)
   (usage-analyze)
+  (usage-print)
   (usage-plot)
   (usage-strategy)
   (usage-util)
