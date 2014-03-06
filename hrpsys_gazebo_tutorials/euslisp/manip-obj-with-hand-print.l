@@ -19,6 +19,7 @@
   (warn "(print-obj-info)~%")
   (warn "(print-manip-info)~%")
   (warn "(print-class-info)~%")
+  (warn "(print-result)~%")
   )
 
 
@@ -97,7 +98,7 @@
   (warn "~8a|" "ave")
   (dotimes (j (length (elt *eval-list* 0))) ;; obj
     (when obj-num (setq j obj-num)) ;; when obj is specified
-    (let* (obj-eval-list obj-eval manip-eval-list manip-eval)
+    (let* (obj-eval-list obj-eval)
       (setq obj-eval-list (mapcar #'(lambda (x) (elt x j)) *eval-list*))
       (setq obj-eval (/ (reduce #'+ obj-eval-list) (length obj-eval-list)))
       (warn "    ~8a" obj-eval))
@@ -170,4 +171,51 @@
 		   nil)))
       (when class-num (return-from nil nil))))
   (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  )
+
+;; result
+(defun print-result
+  (&key (obj-num nil) (manip-num nil))
+
+  ;; print first line
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  (warn "~10a|" "mnp\\obj")
+  (dotimes (j (length (elt *class-list* 0))) ;; obj
+    (when obj-num (setq j obj-num)) ;; when obj is specified
+    (warn "    ~10a" j)
+    (when obj-num (return-from nil nil)) ;; when obj is specified
+    )
+  (warn "    ~10a" "ave")
+  (warn "~%")
+  (warn "--------------------------------------------------------------------~%")
+  ;; print data
+  (dotimes (i (length *class-list*)) ;; manip
+    (when manip-num (setq i manip-num)) ;; when manip is specified
+    (warn "~10a|" i)
+    (dotimes (j (length (elt *class-list* 0))) ;; obj
+      (when obj-num (setq j obj-num)) ;; when obj is specified
+      (warn "    ~2a(~6,2f)"
+	    (elt (elt *class-list* i) j)
+	    (elt *class-eval* (elt (elt *class-list* i) j)))
+      (when obj-num (return-from nil nil)) ;; when obj is specified
+      )
+    (let* (manip-eval-list manip-eval)
+      (setq manip-eval-list (mapcar #'(lambda (x) (elt *class-eval* x)) (elt *class-list* i)))
+      (setq manip-eval (/ (reduce #'+ manip-eval-list) (length manip-eval-list)))
+      (warn "    ~2a[~6,2f]" "" manip-eval))
+    (warn "~%")
+    (when manip-num (return-from nil nil)) ;; when manip is specified
+    )
+  ;; print obj ave
+  (warn "~10a|" "ave")
+  (dotimes (j (length (elt *class-list* 0))) ;; obj
+    (when obj-num (setq j obj-num)) ;; when obj is specified
+    (let* (obj-eval-list obj-eval)
+      (setq obj-eval-list (mapcar #'(lambda (x) (elt *class-eval* x)) (mapcar #'(lambda (x) (elt x j)) *class-list*)))
+      (setq obj-eval (/ (reduce #'+ obj-eval-list) (length obj-eval-list)))
+      (warn "    ~2a[~6,2f]" "" obj-eval))
+    (when obj-num (return-from nil nil)) ;; when obj is specified
+    )
+  (warn "~%")
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")  
   )
