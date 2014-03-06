@@ -78,8 +78,6 @@
     (eval (list 'setq '*right-ar* (read-from-string (format nil "*right-ar~d*" (+ i 1)))))
     (push-back *left-ar* *arlist*)
     (push-back *right-ar* *arlist*)
-    ;; (eval (list 'push-back (read-from-string (format nil "*left-ar~d*" (+ i 1))) '*arlist*))
-    ;; (eval (list 'push-back (read-from-string (format nil "*right-ar~d*" (+ i 1))) '*arlist*))
     ;; make hand
     (eval (list 'setq (read-from-string (format nil "*lhand~d*" (+ i 1))) (hrp3hand_l)))
     (eval (list 'setq (read-from-string (format nil "*rhand~d*" (+ i 1))) (hrp3hand_r)))
@@ -87,8 +85,6 @@
     (eval (list 'setq '*rhand* (read-from-string (format nil "*rhand~d*" (+ i 1)))))
     (push-back *lhand* *handlist*)
     (push-back *rhand* *handlist*)
-    ;; (eval (list 'push-back (read-from-string (format nil "*lhand~d*" (+ i 1))) '*handlist*))
-    ;; (eval (list 'push-back (read-from-string (format nil "*rhand~d*" (+ i 1))) '*handlist*))
     ;; make obj
     (cond 
      ((equal model-name "cupboard_wh")
@@ -96,9 +92,6 @@
       (eval (list 'setq '*obj* (read-from-string (format nil "*obj~d*" (+ i 1)))))
       (send *lhand* :newcoords (send *obj* :handle :name :left-front-handle1))
       (send *rhand* :newcoords (send *obj* :handle :name :right-front-handle1))
-      ;; (eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (make-73b2-cupboard-without-all-door)))
-      ;; (eval (list 'send (read-from-string (format nil "*lhand~d*" (+ i 1))) :newcoords
-      ;; 		  (eval (list 'send (read-from-string (format nil "*obj~d*" (+ i 1))) :handle :name :left-front-handle1))))
       )
      ((equal model-name "drum_wh")
       (eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (instance drum_body_gkmodel0_nil_link_geom0 :init)))
@@ -111,9 +104,6 @@
     (send *obj* :assoc *lhand*)
     (send *obj* :assoc *rhand*)
     (push-back *obj* *objlist*)
-    ;;(eval (list 'push-back (read-from-string (format nil "*obj~d*" (+ i 1))) '*objlist*))
-    ;; (eval (list 'send (read-from-string (format nil "*obj~d*" (+ i 1))) :assoc (read-from-string (format nil "*lhand~d*" (+ i 1)))))
-    ;; (eval (list 'send (read-from-string (format nil "*obj~d*" (+ i 1))) :assoc (read-from-string (format nil "*rhand~d*" (+ i 1)))))
     )
   ;; make ground
   (setq *ground* (instance ground :init 5000 5000 450 450 "702-floor-tex.jpg" :name "702-ground"))
