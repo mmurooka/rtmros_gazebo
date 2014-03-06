@@ -121,15 +121,21 @@
 (defun classify-feature-value
   (&key (class-num 3))
 
-  ;; (load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
+  ;; set original data
   (setq *all-orig-data* nil)
-  (dotimes (i (length *fv-list*))
-    (push-back (list (cons :manip (elt *manip-list* i))
-		     (cons :contact (elt *contact-list* i))
-		     (cons :2dcoord (elt *2dcoord-list* i))
-		     (cons :fv (elt *fv-list* i))
-		     (cons :eval (elt *eval-list* i)))
-	       *all-orig-data*))
+  (dotimes (i (length *fv-list*)) ;; manip
+    (dotimes (j (length (elt *fv-list* 0))) ;; obj
+      (push-back (list (cons :manip (elt (elt *manip-list* i) j))
+		       (cons :contact (elt (elt *contact-list* i) j))
+		       (cons :2dcoord (elt (elt *2dcoord-list* i) j))
+		       (cons :eval (elt (elt *eval-list* i) j))
+		       (cons :fv (elt (elt *fv-list* i) j))
+		       (cons :obj j)
+		       (cons :manip i)
+		       )
+		 *all-orig-data*)))
+  ;; classify
+  ;; (load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
   (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
   ;; sort result depending on element number
   (unless (equal *all-class-data* :error)
