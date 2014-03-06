@@ -72,7 +72,7 @@
   )
 
 ;; update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; coord
+;; obj coord
 (defun update-coord-cupboard
   ()
 
@@ -90,6 +90,35 @@
     (send obj :newcoords trans-gzb-pose)
     ;; (send obj :newcoords (make-coords :pos (float-vector 0 0 (elt gzb-pos 2)) :rot (send gzb-pose :rot))) ;; ignore x,y motion
     ))
+
+;; ar coord
+(defun update-ar-coord
+  (f1 f2)
+
+  (dotimes (i (length *objlist*))
+    (eval (list 'update-ar-coord-one 'f1 'f2
+		:lhand (read-from-string (format nil "*lhand~d*" (+ i 1)))
+		:rhand (read-from-string (format nil "*rhand~d*" (+ i 1)))
+		:left-ar (read-from-string (format nil "*left-ar~d*" (+ i 1)))
+		:right-ar (read-from-string (format nil "*right-ar~d*" (+ i 1)))))))
+
+(defun update-ar-coord-one
+  (f1 f2 &key (lhand *lhand*) (rhand *rhand*) (left-ar *left-ar*) (right-ar *right-ar*))
+  
+  (let* ((l1 (* (+ (norm f1) 2) 5))
+	 (f11n (normalize-vector f1))
+	 (f12n (v* f11n (float-vector 1 1 1)))
+	 (f13n (v* f11n f12n))
+	 (f1coord (make-coords :pos (send (send lhand :copy-worldcoords) :worldpos) :rot (send (send (send lhand :copy-worldcoords) :transform (make-coords :rot (transpose (matrix f11n f12n f13n)))) :rot)))
+	 (l2 (* (+ (norm f2) 2) 5))
+	 (f21n (normalize-vector f2))
+	 (f22n (v* f21n (float-vector 1 1 1)))
+	 (f23n (v* f21n f22n))
+	 (f2coord (make-coords :pos (send (send rhand :copy-worldcoords) :worldpos) :rot (send (send (send rhand :copy-worldcoords) :transform (make-coords :rot (transpose (matrix f21n f22n f23n)))) :rot))))
+    (send left-ar :newcoords (send (send (send (send f1coord :copy-worldcoords) :rotate -pi/2 :z) :rotate 0 :x) :translate (float-vector 0 l1 0) :local))
+    (send right-ar :newcoords (send (send (send (send f2coord :copy-worldcoords) :rotate -pi/2 :z) :rotate 0 :x) :translate (float-vector 0 l2 0) :local))
+    ))
+
 
 ;; contact
 (defun update-contact-cupboard
