@@ -103,20 +103,21 @@
 (defun calc-feature-value
   (&key (output t))
 
-  (setq *fv-list* nil)
-  (setq *eval-list* nil)
-  (dotimes (i (length *contact-list*))
-    (let* ((contact (elt *contact-list* i))
-	   (2dcoord (elt *2dcoord-list* i))
-	   (fv-eval-list (calc-feature-value-one contact 2dcoord)))
-      (push-back (elt fv-eval-list 0) *fv-list*)
-      (push-back (elt fv-eval-list 1) *eval-list*)))
+  (setq *fv-list* (make-list (length *contact-list*)))
+  (setq *eval-list* (make-list (length *contact-list*)))
+  (dotimes (i (length *contact-list*)) ;; manip
+    (dotimes (j (length (elt *contact-list* 0))) ;; obj
+      (let* ((contact (elt (elt *contact-list* i) j))
+	     (2dcoord (elt (elt *2dcoord-list* i) j))
+	     (fv-eval-list (calc-feature-value-one contact 2dcoord)))
+	(push-back (elt fv-eval-list 0) (elt *fv-list* i))
+	(push-back (elt fv-eval-list 1) (elt *eval-list* i)))))
   (when output
     (print-feature-value))
   )
 
 (defun print-feature-value
-  (&key (class-num nil))
+  (&key (class-num nil) (obj-num nil) (manip-num nil))
 
   (let* (fv-list eval-list)
     (cond (class-num
@@ -125,26 +126,32 @@
 	  (t
 	   (setq fv-list *fv-list*)
 	   (setq eval-list *eval-list*)))
-    (dotimes (j (length fv-list))
-      (warn "--------------------------------------------------------------------~%")
-      (warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
-	    "cont\\fv" "fv-yaw" "fv-d" "fv-cor" "fall/float/eval")
-      (warn "--------------------------------------------------------------------~%")
-      (let* ((fv (elt fv-list j))
-	     (eval (elt eval-list j)))
-	(dotimes (i (/ (1- (length fv)) 3))
-	  (warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
-		(case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum))
-		(elt fv i)
-		(elt fv (+ i (/ (1- (length fv)) 3)))
-		(elt fv (+ i (* (/ (1- (length fv)) 3) 2)))
-		(cond ((< (+ i (* (/ (1- (length fv)) 3) 3)) (length fv))
-		       (elt fv (+ i (* (/ (1- (length fv)) 3) 3))))
-		      ((equal i (1- (/ (1- (length fv)) 3)))
-		       eval)
-		      (t
-		       "--"))
-		))))
+    (dotimes (j (length fv-list)) ;; manip
+      (when manip-num (setq j manip-num)) ;; when manip is specified
+      (dotimes (k (length (elt fv-list 0))) ;; obj
+	(when obj-num (setq k obj-num)) ;; when obj is specified
+	(warn "--------------------------------------------------------------------~%")
+	(warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
+	      "cont\\fv" "fv-yaw" "fv-d" "fv-cor" "fall/float/eval")
+	(warn "--------------------------------------------------------------------~%")
+	(let* ((fv (elt (elt fv-list j) k))
+	       (eval (elt (elt eval-list j) k)))
+	  (dotimes (i (/ (1- (length fv)) 3))
+	    (warn " ~10a  ~10a  ~10a  ~10a  ~10a~%"
+		  (case i (0 :nil) (1 :vertex) (2 :line) (3 :face) (4 :sum))
+		  (elt fv i)
+		  (elt fv (+ i (/ (1- (length fv)) 3)))
+		  (elt fv (+ i (* (/ (1- (length fv)) 3) 2)))
+		  (cond ((< (+ i (* (/ (1- (length fv)) 3) 3)) (length fv))
+			 (elt fv (+ i (* (/ (1- (length fv)) 3) 3))))
+			((equal i (1- (/ (1- (length fv)) 3)))
+			 eval)
+			(t
+			 "--")))))
+	(when obj-num (return-from nil nil)) ;; when obj is specified
+	)
+      (when manip-num (return-from nil nil)) ;; when manip is specified
+      )
     (warn "--------------------------------------------------------------------~%")))
 
 ;; classify feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
