@@ -25,10 +25,13 @@
 
   ;; result
   (setq *manip-list* nil)
-  (setq *eval-list* nil)
   (setq *contact-list* nil)
   (setq *2dcoord-list* nil)
+  (setq *eval-list* nil)
   (setq *fv-list* nil)
+
+  (setq *contact-list-list* nil)
+  (setq *2dcoord-list-list* nil)
 
   ;; final result
   (setq *all-class-data* nil)
@@ -71,21 +74,35 @@
 ;; update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; coord
 (defun update-coord-cupboard
-  (&optional (model-id 0))
+  ()
+
+  (dotimes (i (length *objlist*))
+    (update-coord-cupboard-one :obj (elt *objlist* i) :gp (elt *gplist* i)))
+  )
+
+(defun update-coord-cupboard-one
+  (&key (obj (car *objlist*)) (gp (car *gplist*)))
 
   ;; set gazebo model pose to eus model
-  (let* ((gzb-pose (send (send (elt *gplist* model-id) :get-pose) :copy-worldcoords))
+  (let* ((gzb-pose (send (send gp :get-pose) :copy-worldcoords))
 	 (trans-gzb-pose (send gzb-pose :translate #f(0 0 -500.5) :local))
 	 (gzb-pos (send trans-gzb-pose :worldpos)))
-    (send *obj* :newcoords trans-gzb-pose)
-    ;; (send *obj* :newcoords (make-coords :pos (float-vector 0 0 (elt gzb-pos 2)) :rot (send gzb-pose :rot))) ;; ignore x,y motion
+    (send obj :newcoords trans-gzb-pose)
+    ;; (send obj :newcoords (make-coords :pos (float-vector 0 0 (elt gzb-pos 2)) :rot (send gzb-pose :rot))) ;; ignore x,y motion
     ))
 
 ;; contact
 (defun update-contact-cupboard
   ()
 
-  (let* ((bottom-face (send *obj* :faces))
+  (dolist (obj *objlist*)
+    (update-contact-cupboard-one :obj obj))
+  )
+
+(defun update-contact-cupboard-one
+  (&key (obj *obj*))
+
+  (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges))
 	 (bottom-vertices-z (mapcar #'(lambda (v) (elt v 2)) bottom-vertices))
@@ -100,15 +117,15 @@
       (push-back (and (elt bottom-vcont i) (elt bottom-vcont (mod (+ i 1) 4))) bottom-lcont)
       )
     ;;(print bottom-vertices-z)
-    (send *obj* :put :vcont bottom-vcont)
-    (send *obj* :put :lcont bottom-lcont)
-    (send *obj* :put :fcont (not (position nil bottom-vcont)))
-    (send *obj* :put :2d-pos (scale 0.001 (scale (/ 1.0 (length bottom-vertices)) (reduce #'v+ bottom-vertices))))
-    (send *obj* :put :2d-angle (elt (car (send (send (send *obj* :copy-worldcoords) :rotate pi :z) :rpy-angle)) 0))
-    (cond ((send *obj* :get :fcont) (send *obj* :put :contact :face))
-	  ((position t (send *obj* :get :lcont)) (send *obj* :put :contact :line))
-	  ((position t (send *obj* :get :vcont)) (send *obj* :put :contact :vertex))
-	  (t (send *obj* :put :contact :nil)))
+    (send obj :put :vcont bottom-vcont)
+    (send obj :put :lcont bottom-lcont)
+    (send obj :put :fcont (not (position nil bottom-vcont)))
+    (send obj :put :2d-pos (scale 0.001 (scale (/ 1.0 (length bottom-vertices)) (reduce #'v+ bottom-vertices))))
+    (send obj :put :2d-angle (elt (car (send (send (send obj :copy-worldcoords) :rotate pi :z) :rpy-angle)) 0))
+    (cond ((send obj :get :fcont) (send obj :put :contact :face))
+	  ((position t (send obj :get :lcont)) (send obj :put :contact :line))
+	  ((position t (send obj :get :vcont)) (send obj :put :contact :vertex))
+	  (t (send obj :put :contact :nil)))
     ))
 
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -116,17 +133,24 @@
 (defun draw-contact-cupboard
   ()
 
-  (let* ((bottom-face (send *obj* :faces))
+  (dolist (obj *objlist*)
+    (draw-contact-cupboard-one :obj obj))
+  )
+
+(defun draw-contact-cupboard-one
+  (&key (obj *obj*))
+
+  (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges)))
     (dotimes (i (length bottom-vertices))
-      (when (elt (send *obj* :get :vcont) i)
+      (when (elt (send obj :get :vcont) i)
 	(send (elt bottom-vertices i) :draw-on :color #f(1 0 0) :width 5))
-      (when (elt (send *obj* :get :lcont) i)
+      (when (elt (send obj :get :lcont) i)
 	(send (elt bottom-edges i) :draw-on :color #f(1 0 0) :width 5))
       ))
   (send *pickview* :viewer :viewsurface
-	:string 10 20 (string (send *obj* :get :contact)))
+	:string 10 20 (string (send obj :get :contact)))
   )
 
 ;; loop
