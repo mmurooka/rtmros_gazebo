@@ -43,7 +43,7 @@
 
 ;; initialize ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun init
-  (&key (model-num 1) (model-name "cupboard_wh") (force nil))
+  (&key (model-num 3) (model-name "cupboard_wh") (force nil))
 
   (when (and (boundp '*manip-obj-with-hand-init-flag*) (not force))
     (init-variable)
