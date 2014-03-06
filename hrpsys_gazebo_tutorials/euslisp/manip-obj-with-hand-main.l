@@ -14,6 +14,7 @@
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-generate.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-manip.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-analyze.l")
+(load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-print.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-plot.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/manip-obj-with-hand-strategy.l")
 
