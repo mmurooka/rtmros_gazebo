@@ -68,6 +68,12 @@
   (load (format nil "./~a" (string-downcase (string (read (piped-fork "ls -t1 log/*.l | head -n 1"))))))
   )
 
+;; utill ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun get-class-num
+  ()
+
+  (length (elt *all-class-data* 1)))
+
 ;; update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; obj coord
 (defun update-coord-cupboard
