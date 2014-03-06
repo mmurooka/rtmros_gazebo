@@ -60,34 +60,67 @@
 
     ;; make gazebo plugin interface
     (eval (list 'setq (read-from-string (format nil "*gp~d*" (+ i 1))) (init-gazebo-plugin (format nil "obj~d" (+ i 1)))))
-    (eval (list 'push-back (read-from-string (format nil "*gp~d*" (+ i 1))) '*gplist*))) 
+    (eval (list 'push-back (read-from-string (format nil "*gp~d*" (+ i 1))) '*gplist*)))
 
   ;; make controller interface
   (setq *hc* (instance hand-command-publisher-class :init))
   (unix::usleep (* 1000 1000))
 
   ;; make and view euslisp model
-  (setq *ar1* (single-arrow))
-  (setq *ar2* (single-arrow))
-  (setq *lhand* (hrp3hand_l))  
-  (setq *rhand* (hrp3hand_r))  
+  (setq *arlist* nil)
+  (setq *handlist* nil)
+  (setq *objlist* nil)
+  (dotimes (i model-num)
+    ;; make arrow
+    (eval (list 'setq (read-from-string (format nil "*left-ar~d*" (+ i 1))) (single-arrow)))
+    (eval (list 'setq (read-from-string (format nil "*right-ar~d*" (+ i 1))) (single-arrow)))
+    (eval (list 'setq '*left-ar* (read-from-string (format nil "*left-ar~d*" (+ i 1)))))
+    (eval (list 'setq '*right-ar* (read-from-string (format nil "*right-ar~d*" (+ i 1)))))
+    (push-back *left-ar* *arlist*)
+    (push-back *right-ar* *arlist*)
+    ;; (eval (list 'push-back (read-from-string (format nil "*left-ar~d*" (+ i 1))) '*arlist*))
+    ;; (eval (list 'push-back (read-from-string (format nil "*right-ar~d*" (+ i 1))) '*arlist*))
+    ;; make hand
+    (eval (list 'setq (read-from-string (format nil "*lhand~d*" (+ i 1))) (hrp3hand_l)))
+    (eval (list 'setq (read-from-string (format nil "*rhand~d*" (+ i 1))) (hrp3hand_r)))
+    (eval (list 'setq '*lhand* (read-from-string (format nil "*lhand~d*" (+ i 1)))))
+    (eval (list 'setq '*rhand* (read-from-string (format nil "*rhand~d*" (+ i 1)))))
+    (push-back *lhand* *handlist*)
+    (push-back *rhand* *handlist*)
+    ;; (eval (list 'push-back (read-from-string (format nil "*lhand~d*" (+ i 1))) '*handlist*))
+    ;; (eval (list 'push-back (read-from-string (format nil "*rhand~d*" (+ i 1))) '*handlist*))
+    ;; make obj
+    (cond 
+     ((equal model-name "cupboard_wh")
+      (eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (make-73b2-cupboard-without-all-door)))
+      (eval (list 'setq '*obj* (read-from-string (format nil "*obj~d*" (+ i 1)))))
+      (send *lhand* :newcoords (send *obj* :handle :name :left-front-handle1))
+      (send *rhand* :newcoords (send *obj* :handle :name :right-front-handle1))
+      ;; (eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (make-73b2-cupboard-without-all-door)))
+      ;; (eval (list 'send (read-from-string (format nil "*lhand~d*" (+ i 1))) :newcoords
+      ;; 		  (eval (list 'send (read-from-string (format nil "*obj~d*" (+ i 1))) :handle :name :left-front-handle1))))
+      )
+     ((equal model-name "drum_wh")
+      (eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (instance drum_body_gkmodel0_nil_link_geom0 :init)))
+      (eval (list 'setq '*obj* (read-from-string (format nil "*obj~d*" (+ i 1)))))
+      (send *obj* :newcoords (make-coords))
+      (send *lhand* :newcoords (make-coords :pos (v+ (send *obj* :worldpos) (float-vector 1800 -270 800)):rot (rpy-matrix pi -pi/2 0)))
+      (send *rhand* :newcoords (make-coords :pos (v+ (send *obj* :worldpos) (float-vector 1800 410 800)):rot (rpy-matrix pi -pi/2 0)))
+      ))
+    ;; assoc hand
+    (send *obj* :assoc *lhand*)
+    (send *obj* :assoc *rhand*)
+    (push-back *obj* *objlist*)
+    ;;(eval (list 'push-back (read-from-string (format nil "*obj~d*" (+ i 1))) '*objlist*))
+    ;; (eval (list 'send (read-from-string (format nil "*obj~d*" (+ i 1))) :assoc (read-from-string (format nil "*lhand~d*" (+ i 1)))))
+    ;; (eval (list 'send (read-from-string (format nil "*obj~d*" (+ i 1))) :assoc (read-from-string (format nil "*rhand~d*" (+ i 1)))))
+    )
+  ;; make ground
   (setq *ground* (instance ground :init 5000 5000 450 450 "702-floor-tex.jpg" :name "702-ground"))
-  (cond 
-   ((equal model-name "cupboard_wh")
-    (setq *obj* (make-73b2-cupboard-without-all-door))
-    (send *lhand* :newcoords (send *obj* :handle :name :left-front-handle1))
-    (send *rhand* :newcoords (send *obj* :handle :name :right-front-handle1)))
-   ((equal model-name "drum_wh")
-    (setq *obj* (instance drum_body_gkmodel0_nil_link_geom0 :init))
-    (send *obj* :newcoords (make-coords))
-    (send *lhand* :newcoords (make-coords :pos (v+ (send *obj* :worldpos) (float-vector 1800 -270 800)):rot (rpy-matrix pi -pi/2 0)))
-    (send *rhand* :newcoords (make-coords :pos (v+ (send *obj* :worldpos) (float-vector 1800 410 800)):rot (rpy-matrix pi -pi/2 0)))
-    ))
-  (send *obj* :assoc *lhand*)
-  (send *obj* :assoc *rhand*)
+  ;; view models
   (unless (boundp '*pickview*)
     (pickview :no-menu t))
-  (objects (list *obj* *ground* *lhand* *rhand* *ar1* *ar2*))
+  (objects (append *arlist* *handlist* *objlist* (list *ground*)))
 
   ;; set hook-pose
   (set-hand-pose :hook-pose :arms)
