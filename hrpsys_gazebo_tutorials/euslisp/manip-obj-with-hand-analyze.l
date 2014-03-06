@@ -23,10 +23,15 @@
 (defun analyze
   (&key (class-num 3))
 
+  ;; calc feature value
   (calc-feature-value :output nil)
+  ;; classify
   (classify-feature-value :class-num class-num)
   (when (equal *all-class-data* :error)
     (return-from analyze nil nil))
+  ;; calc class eval
+  (calc-class-eval)
+  ;; update class list
   (update-class-list)
   t)
 
