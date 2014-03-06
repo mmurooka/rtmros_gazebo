@@ -178,6 +178,8 @@
 	      (t
 	       (push-back class-eval class-eval-list))))
       (when class-num (return-from nil nil)))
+    (unless class-num
+      (setq *class-eval* class-eval-list))
     class-eval-list
     ))
 

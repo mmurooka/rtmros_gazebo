@@ -159,7 +159,7 @@
 	(setq i class-num))
       (setq class-data (elt (elt *all-class-data* 1) i))
       (setq class-elem-num (length class-data))
-      (setq class-eval (calc-class-eval :class-num i))
+      (setq class-eval (elt *class-eval* i))
       (setq class-inside-eval-list
 	    (mapcar #'(lambda (x) (cdr (assoc :eval x))) class-data))   
       (warn " ~10a  ~10a  ~10a  ~10a~%"
