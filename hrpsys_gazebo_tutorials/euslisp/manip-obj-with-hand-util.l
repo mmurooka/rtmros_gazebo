@@ -42,14 +42,6 @@
   ;; strategy
   (setq *strategy-manip-list* nil)
   (gen-all-strategy)
-
-  ;; object state
-  (send *obj* :put :vcont (list nil nil nil nil))
-  (send *obj* :put :lcont (list nil nil nil nil))
-  (send *obj* :put :fcont nil)
-  (send *obj* :put :contact :face)
-  (send *obj* :put :2d-pos (float-vector 0 0))
-  (send *obj* :put :2d-angle 0)
   )
 
 
@@ -133,7 +125,7 @@
   )
 
 (defun update-contact-cupboard-one
-  (&key (obj *obj*))
+  (&key (obj *obj1*))
 
   (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
@@ -171,7 +163,7 @@
   )
 
 (defun draw-contact-cupboard-one
-  (&key (obj *obj*))
+  (&key (obj *obj1*))
 
   (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
