@@ -209,7 +209,46 @@
     class-eval-list
     ))
 
-;; print class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; print info ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; obj
+(defun print-obj-info
+  (&key (obj-num nil))
+
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  (warn " ~10a  ~10a  ~20a~%"
+	"id\\value" "eval" "eval-list")
+  (dotimes (i (length (elt *eval-list* 0)))
+    (let* (obj-eval obj-eval-list)
+      (when obj-num (setq i obj-num)) ;; when obj is specified
+      (setq obj-eval-list (mapcar #'(lambda (x) (elt x i)) *eval-list*))
+      (setq obj-eval (/ (reduce #'+ obj-eval-list) (length obj-eval-list)))
+      (warn " ~10a  ~10a  ~20a~%"
+	    i obj-eval obj-eval-list)
+      (when obj-num (return-from nil nil)) ;; when obj is specified
+      ))
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  )
+
+;; manip
+(defun print-manip-info
+  (&key (manip-num nil))
+
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  (warn " ~10a  ~10a  ~20a~%"
+	"id\\value" "eval" "eval-list")
+  (dotimes (i (length *eval-list*))
+    (let* (manip-eval manip-eval-list)
+      (when manip-num (setq i manip-num)) ;; when manip is specified
+      (setq manip-eval-list (elt *eval-list* i))
+      (setq manip-eval (/ (reduce #'+ manip-eval-list) (length manip-eval-list)))
+      (warn " ~10a  ~10a  ~20a~%"
+	    i manip-eval manip-eval-list)
+      (when manip-num (return-from nil nil)) ;; when manip is specified
+      ))
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
+  )
+
+;; class
 (defun print-class-info
   (&key (class-num nil) (class-inside-eval-list-flag nil))
 
