@@ -29,8 +29,8 @@
 
   (let* (fv-list eval-list)
     (cond (class-num
-	   (setq fv-list (mapcar #'(lambda (x) (cdr (assoc :fv x))) (elt (elt *all-class-data* 1) class-num)))
-	   (setq eval-list (mapcar #'(lambda (x) (cdr (assoc :eval x))) (elt (elt *all-class-data* 1) class-num))))
+	   (setq fv-list (list (mapcar #'(lambda (x) (cdr (assoc :fv x))) (elt (elt *all-class-data* 1) class-num))))
+	   (setq eval-list (list (mapcar #'(lambda (x) (cdr (assoc :eval x))) (elt (elt *all-class-data* 1) class-num)))))
 	  (t
 	   (setq fv-list *fv-list*)
 	   (setq eval-list *eval-list*)))

@@ -27,8 +27,8 @@
   (dotimes (i (length (elt *all-class-data* 1)))
     (when class-num (setq i class-num))
     ;; plot
-    (plot-contact :data (mapcar #'(lambda (x) (cdr (assoc :contact x))) (elt (elt *all-class-data* 1) i)))
-    (plot-2dcoord :data (mapcar #'(lambda (x) (cdr (assoc :2dcoord x))) (elt (elt *all-class-data* 1) i)))
+    (plot-contact :data (list (mapcar #'(lambda (x) (cdr (assoc :contact x))) (elt (elt *all-class-data* 1) i))))
+    (plot-2dcoord :data (list (mapcar #'(lambda (x) (cdr (assoc :2dcoord x))) (elt (elt *all-class-data* 1) i))))
     (warn "plotting ~d data ~d / ~d. press any key for next plotting. ~%"
 	  (length (mapcar #'(lambda (x) (cdr (assoc :contact x))) (elt (elt *all-class-data* 1) i))) (+ i 1) (length (elt *all-class-data* 1)))
     ;; wait
