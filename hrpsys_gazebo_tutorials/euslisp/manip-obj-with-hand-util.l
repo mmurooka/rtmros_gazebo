@@ -161,12 +161,16 @@
 (defun draw-contact-cupboard
   ()
 
-  (dolist (obj *objlist*)
-    (draw-contact-cupboard-one :obj obj))
-  )
+  (dotimes (i (length *objlist*))
+    (let* ((obj (elt *objlist* i))
+	   (pos (float-vector 10 (+ 20 (* i 15))))
+	   (output-string
+	    (format nil "~a : ~a" i (string (send obj :get :contact)))))
+      (draw-contact-cupboard-one :obj obj :pos pos :output-string output-string))
+    ))
 
 (defun draw-contact-cupboard-one
-  (&key (obj *obj1*))
+  (&key (obj *obj1*) (pos (float-vector 10 20)) (output-string (string (send obj :get :contact))))
 
   (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
@@ -178,7 +182,7 @@
 	(send (elt bottom-edges i) :draw-on :color #f(1 0 0) :width 5))
       ))
   (send *pickview* :viewer :viewsurface
-	:string 10 20 (string (send obj :get :contact)))
+	:string (elt pos 0) (elt pos 1) output-string)
   )
 
 ;; loop
