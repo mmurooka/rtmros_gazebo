@@ -174,14 +174,14 @@
 
   (let* ((dist (norm (subseq (car 2dcoord) 0 2)))
 	 (dist-score 0)
-	 (falling-down-score 0)
+	 (fall-down-score 0)
 	 (float-score 0))
     (setq dist-score (* dist 100))
     (cond ((equal contact :invalid)
-	   (setq falling-down-score -100))
+	   (setq fall-down-score -100))
 	  ((equal contact :nil)
 	   (setq float-score 100)))
-    (+ dist-score falling-down-score float-score)
+    (+ dist-score fall-down-score float-score)
     ))
 
 ;; print class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
