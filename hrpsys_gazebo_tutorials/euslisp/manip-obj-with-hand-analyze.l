@@ -125,7 +125,7 @@
   (setq *all-orig-data* nil)
   (dotimes (i (length *fv-list*)) ;; manip
     (dotimes (j (length (elt *fv-list* 0))) ;; obj
-      (push-back (list (cons :manip (elt (elt *manip-list* i) j))
+      (push-back (list (cons :manip (elt *manip-list* i))
 		       (cons :contact (elt (elt *contact-list* i) j))
 		       (cons :2dcoord (elt (elt *2dcoord-list* i) j))
 		       (cons :eval (elt (elt *eval-list* i) j))
