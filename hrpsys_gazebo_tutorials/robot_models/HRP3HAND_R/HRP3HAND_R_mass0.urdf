@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<robot name="HRP3HAND_R"
+       xmlns:xi="http://www.w3.org/2001/XInclude"
+       xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+       xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+       xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+       xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+       xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics">
+  <link name="RARM_LINK6">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/RARM_LINK6_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/RARM_LINK6_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0.00067085 -0.00738842 -0.085722" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="RARM_LINK6">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <link name="R_INDEXMP_R_LINK">
+    <visual>
+      <origin xyz="0 0.0102 -0.1547" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_INDEXMP_R_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.0102 -0.1547" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_INDEXMP_R_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0.00509194 -0.00581104 6.273e-05" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="R_INDEXMP_R_LINK">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <link name="R_INDEXMP_P_LINK">
+    <visual>
+      <origin xyz="0.02 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_INDEXMP_P_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.02 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_INDEXMP_P_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="-0.00078463 0.00129762 -0.0281757" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="R_INDEXMP_P_LINK">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <link name="R_INDEXPIP_R_LINK">
+    <visual>
+      <origin xyz="0 0.01125 -0.055" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_INDEXPIP_R_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.01125 -0.055" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_INDEXPIP_R_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0.0210676 0.0134797 -0.0204042" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="R_INDEXPIP_R_LINK">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <link name="R_MIDDLEPIP_R_LINK">
+    <visual>
+      <origin xyz="0 0.02145 -0.2097" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_MIDDLEPIP_R_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.02145 -0.2097" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_MIDDLEPIP_R_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="-0.0171953 0.0140037 -0.0195553" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="R_MIDDLEPIP_R_LINK">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <link name="R_THUMBCM_Y_LINK">
+    <visual>
+      <origin xyz="0 0.0102 -0.1292" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_THUMBCM_Y_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.0102 -0.1292" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_THUMBCM_Y_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0.0314882 0.00644999 0.00140644" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="R_THUMBCM_Y_LINK">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <link name="R_THUMBCM_P_LINK">
+    <visual>
+      <origin xyz="0.045 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_THUMBCM_P_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.045 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://hrpsys_gazebo_tutorials/robot_models/HRP3HAND_R/meshes/R_THUMBCM_P_LINK_mesh.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0.00682086 0.013234 -0.0305205" rpy="0 -0 0"/>
+      <inertia ixx="1e-02" ixy="0" ixz="0" iyy="1e-02" iyz="0" izz="1e-02"/>
+    </inertial>
+  </link>
+  <gazebo reference="R_THUMBCM_P_LINK">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+  <joint name="R_INDEXMP_R" type="revolute">
+    <parent link="RARM_LINK6"/>
+    <child  link="R_INDEXMP_R_LINK"/>
+    <origin xyz="0 0.0102 -0.1547" rpy="0 -0 0 "/>
+    <axis   xyz="1 0 0"/>
+    <limit lower="-0.261799" upper="1.6057" effort="100" velocity="0.5" />
+    <dynamics damping="0.2" friction="0" />
+  </joint>
+  <transmission type="pr2_mechanism_model/SimpleTransmission" name="R_INDEXMP_R_trans" >
+    <actuator name="R_INDEXMP_R_motor" />
+    <joint name="R_INDEXMP_R" />
+    <mechanicalReduction>1</mechanicalReduction>
+  </transmission>
+  <gazebo reference="R_INDEXMP_R">
+    <cfmDamping>0.4</cfmDamping>
+  </gazebo>
+  <joint name="R_INDEXMP_P" type="revolute">
+    <parent link="R_INDEXMP_R_LINK"/>
+    <child  link="R_INDEXMP_P_LINK"/>
+    <origin xyz="0.02 0 0" rpy="0 -0 0 "/>
+    <axis   xyz="0 -1 0"/>
+    <limit lower="-0" upper="1.5708" effort="100" velocity="0.5" />
+    <dynamics damping="0.2" friction="0" />
+  </joint>
+  <transmission type="pr2_mechanism_model/SimpleTransmission" name="R_INDEXMP_P_trans" >
+    <actuator name="R_INDEXMP_P_motor" />
+    <joint name="R_INDEXMP_P" />
+    <mechanicalReduction>1</mechanicalReduction>
+  </transmission>
+  <gazebo reference="R_INDEXMP_P">
+    <cfmDamping>0.4</cfmDamping>
+  </gazebo>
+  <joint name="R_INDEXPIP_R" type="revolute">
+    <parent link="R_INDEXMP_P_LINK"/>
+    <child  link="R_INDEXPIP_R_LINK"/>
+    <origin xyz="0 0.01125 -0.055" rpy="0 -0 0 "/>
+    <axis   xyz="1 0 0"/>
+    <limit lower="-0.698132" upper="2.00713" effort="100" velocity="0.5" />
+    <dynamics damping="0.2" friction="0" />
+  </joint>
+  <transmission type="pr2_mechanism_model/SimpleTransmission" name="R_INDEXPIP_R_trans" >
+    <actuator name="R_INDEXPIP_R_motor" />
+    <joint name="R_INDEXPIP_R" />
+    <mechanicalReduction>1</mechanicalReduction>
+  </transmission>
+  <gazebo reference="R_INDEXPIP_R">
+    <cfmDamping>0.4</cfmDamping>
+  </gazebo>
+  <joint name="R_MIDDLEPIP_R" type="revolute">
+    <parent link="RARM_LINK6"/>
+    <child  link="R_MIDDLEPIP_R_LINK"/>
+    <origin xyz="0 0.02145 -0.2097" rpy="0 -0 0 "/>
+    <axis   xyz="1 0 0"/>
+    <limit lower="-0.698132" upper="2.00713" effort="100" velocity="0.5" />
+    <dynamics damping="0.2" friction="0" />
+  </joint>
+  <transmission type="pr2_mechanism_model/SimpleTransmission" name="R_MIDDLEPIP_R_trans" >
+    <actuator name="R_MIDDLEPIP_R_motor" />
+    <joint name="R_MIDDLEPIP_R" />
+    <mechanicalReduction>1</mechanicalReduction>
+  </transmission>
+  <gazebo reference="R_MIDDLEPIP_R">
+    <cfmDamping>0.4</cfmDamping>
+  </gazebo>
+  <joint name="R_THUMBCM_Y" type="revolute">
+    <parent link="RARM_LINK6"/>
+    <child  link="R_THUMBCM_Y_LINK"/>
+    <origin xyz="0 0.0102 -0.1292" rpy="0 -0 0 "/>
+    <axis   xyz="0 0 1"/>
+    <limit lower="-0.261799" upper="1.6057" effort="100" velocity="0.5" />
+    <dynamics damping="0.2" friction="0" />
+  </joint>
+  <transmission type="pr2_mechanism_model/SimpleTransmission" name="R_THUMBCM_Y_trans" >
+    <actuator name="R_THUMBCM_Y_motor" />
+    <joint name="R_THUMBCM_Y" />
+    <mechanicalReduction>1</mechanicalReduction>
+  </transmission>
+  <gazebo reference="R_THUMBCM_Y">
+    <cfmDamping>0.4</cfmDamping>
+  </gazebo>
+  <joint name="R_THUMBCM_P" type="revolute">
+    <parent link="R_THUMBCM_Y_LINK"/>
+    <child  link="R_THUMBCM_P_LINK"/>
+    <origin xyz="0.045 0 0" rpy="0 -0 0 "/>
+    <axis   xyz="0 -1 0"/>
+    <limit lower="-0.523599" upper="1.6057" effort="100" velocity="0.5" />
+    <dynamics damping="0.2" friction="0" />
+  </joint>
+  <transmission type="pr2_mechanism_model/SimpleTransmission" name="R_THUMBCM_P_trans" >
+    <actuator name="R_THUMBCM_P_motor" />
+    <joint name="R_THUMBCM_P" />
+    <mechanicalReduction>1</mechanicalReduction>
+  </transmission>
+  <gazebo reference="R_THUMBCM_P">
+    <cfmDamping>0.4</cfmDamping>
+  </gazebo>
+  <gazebo>
+    <plugin filename="libIOBPlugin.so" name="hrpsys_gazebo_plugin" >
+      <robotname>HRP3HAND_R</robotname>
+      <controller>hrpsys_gazebo_configuration</controller>
+    </plugin>
+  </gazebo>
+</robot>
