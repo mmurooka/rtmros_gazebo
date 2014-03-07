@@ -35,31 +35,33 @@
 	 flist
 	 (f1 (float-vector 0 0 0)) (f2 (float-vector 0 0 0))
 	 (m1 (float-vector 0 0 0)) (m2 (float-vector 0 0 0))
+	 (update-force-flag nil)
 	 (draw-interval 10))
     (cond (manip-input (setq loop-num (length manip-input)))
 	  (t (setq loop-num *manip-loop-num*)))
     (dotimes (i loop-num)
       ;; update force
+      (setq update-force-flag nil)
       (cond
        (manip-input
 	(setq f1 (elt (elt manip-input i) 0)
 	      f2 (elt (elt manip-input i) 1))
 	(when (equal (length (elt manip-input i)) 4) ;; in the case manip-input includes force moment
 	  (setq m1 (elt (elt manip-input i) 2)
-		m2 (elt (elt manip-input i) 3))))
+		m2 (elt (elt manip-input i) 3)))
+	(setq update-force-flag t))
        (t
 	(when (equal (mod i *update-force-loop-num*) 0)
 	  (setq flist (get-random-force))
 	  (setq f1 (elt flist 0)
 		f2 (elt flist 1))
-	  (warning-message 2 "loop ~d/~d f1:~a f2:~a m1:~a m2:~a~%" i loop-num f1 f2 m1 m2)
-	  )))
+	  (setq update-force-flag t)
+	  (warning-message 2 "loop ~d/~d f1:~a f2:~a m1:~a m2:~a~%" i loop-num f1 f2 m1 m2))))
       ;; add force
-      (dotimes (i (length *gplist*))
-	(unless (or (elt float-flag i) (elt fall-down-flag i))
-	  (send (elt *gplist* i) :add-force2 f1 f2 m1 m2)))
-      ;;(warning-message 2 "loop ~d/~d f1:~a f2:~a m1:~a m2:~a~%" i loop-num f1 f2 m1 m2)
-
+      (when update-force-flag
+	(dotimes (i (length *gplist*))
+	  (unless (or (elt float-flag i) (elt fall-down-flag i))
+	    (send (elt *gplist* i) :add-force2 f1 f2 m1 m2))))
       ;; update coord and contact and view them
       (let* ((update-flag (mapcar #'(lambda (x y) (not (or x y))) float-flag fall-down-flag)))
 	(update-coord-cupboard :update-flag update-flag)
