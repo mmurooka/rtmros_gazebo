@@ -133,7 +133,7 @@
 
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun main1
+(defun main-try
   ()
 
   ;; init
@@ -147,7 +147,7 @@
   (plot-all)
   )
 
-(defun main2
+(defun main-train
   (&key (class-num 3) (no-play t) (no-analyze nil))
 
   ;; init
@@ -171,6 +171,19 @@
   ;; print
   (print-class-info)
   (print-result)
+  )
+
+(defun main-test
+  (&key (obj-num 0))
+
+  ;; init
+  (init)
+  (init-variable-test)
+  ;; load
+  (load-variable)
+  ;; manip
+  (dolist (manip *manip-list*)
+    (manip :obj-num obj-num :manip-input manip :no-save :obj-num))
   )
 
 (defun main-strategy
