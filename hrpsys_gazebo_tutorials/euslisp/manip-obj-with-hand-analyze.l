@@ -30,7 +30,7 @@
   (when (equal *all-class-data* :error)
     (return-from analyze nil nil))
   ;; calc class eval
-  (calc-class-eval)
+  (calc-class-fv-eval)
   ;; update class list
   (update-class-list)
   t)
@@ -161,8 +161,22 @@
 
   ;; sort result depending on element number
   (unless (equal *all-class-data* :error)
-    (setf (elt *all-class-data* 1)
-	  (sort (elt *all-class-data* 1) #'(lambda (x y) (<= (length x) (length y))))))
+    (let* ((class-fv-class-data-list nil)
+	   (class-fv-list
+	    (mapcar #'(lambda (i) (matrix-row (elt *all-class-data* 0) i)) (range (length (elt *all-class-data* 1)))))
+	   (class-data-list (elt *all-class-data* 1)))
+      ;; set data to new variable for sorting
+      (setq class-fv-class-data-list (mapcar #'(lambda (x y) (cons x y)) class-fv-list class-data-list))
+      ;; sort
+      (setq class-fv-class-data-list
+	    (sort class-fv-class-data-list #'(lambda (x y) (<= (length (cdr x)) (length (cdr y))))))
+      ;; set sort data to original variable
+      (setf (elt *all-class-data* 0) nil)
+      (setf (elt *all-class-data* 1) nil)
+      (dolist (class-fv-class-data class-fv-class-data-list)
+	(push-back (car class-fv-class-data) (elt *all-class-data* 0))
+	(push-back (cdr class-fv-class-data) (elt *all-class-data* 1))
+	)))
   nil)
 
 ;; evaluate ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -182,7 +196,7 @@
     (+ dist-score fall-down-score float-score)
     ))
 
-(defun calc-class-eval
+(defun calc-class-fv-eval
   (&key (class-num nil))
 
   (let* (class-eval-list)
@@ -198,7 +212,8 @@
 	       (push-back class-eval class-eval-list))))
       (when class-num (return-from nil nil)))
     (unless class-num
-      (setq *class-eval* class-eval-list))
+      (setq *class-eval* class-eval-list)
+      (setq *class-fv* (elt *all-class-data* 0)))
     class-eval-list
     ))
 

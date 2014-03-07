@@ -35,6 +35,7 @@
   (setq *all-orig-data* nil)
   (setq *all-class-data* nil)
   (setq *class-eval* nil)
+  (setq *class-fv* nil)
 
   ;; manip meta parameter
   (setq *manip-cnt* 0)

@@ -160,20 +160,21 @@
   (&key (class-num nil) (class-inside-eval-list-flag nil))
 
   (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
-  (warn " ~10a  ~10a  ~10a  ~20a~%"
-	"id\\value" "elem" "eval" "eval-list")
+  (warn " ~10a  ~10a  ~10a  ~20a  ~20a~%"
+	"id\\value" "elem" "eval" "fv" "eval-list")
   (dotimes (i (length (elt *all-class-data* 1)))
     (let* (class-data
-	   class-elem-num class-eval class-inside-eval-list)
+	   class-elem-num class-eval class-fv class-inside-eval-list)
       (when class-num ;; when class-num is specified, overwrite with specified num
 	(setq i class-num))
       (setq class-data (elt (elt *all-class-data* 1) i))
       (setq class-elem-num (length class-data))
       (setq class-eval (elt *class-eval* i))
+      (setq class-fv (elt *class-fv* i))
       (setq class-inside-eval-list
 	    (mapcar #'(lambda (x) (cdr (assoc :eval x))) class-data))   
-      (warn " ~10a  ~10a  ~10a  ~10a~%"
-	    i class-elem-num class-eval
+      (warn " ~10a  ~10a  ~10a  ~20a  ~20a~%"
+	    i class-elem-num class-eval class-fv
 	    (cond (class-inside-eval-list-flag
 		   class-inside-eval-list)
 		  (t
