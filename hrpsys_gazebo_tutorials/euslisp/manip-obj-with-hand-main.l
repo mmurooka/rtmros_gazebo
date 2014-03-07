@@ -212,10 +212,10 @@
   ;; try
   (main-try :manip-loop-num manip-loop-num :no-plot t)
   ;; train
-  (main-train :class-num 5 :no-plot t)
+  (main-train :class-num class-num :no-plot t)
   ;; test
   (dotimes (i (length *objlist*))
-    (main-test :obj-num i :class-num 5 :no-plot t)))
+    (main-test :obj-num i :class-num class-num :no-plot t)))
 
 (defun main-strategy
   ()
