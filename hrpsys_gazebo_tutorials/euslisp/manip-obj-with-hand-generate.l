@@ -30,6 +30,7 @@
 
   (let* ((obj-pp-list ;; pysical parameter list
 	  (list
+	   ;; default
 	   (list (cons :mass 5)
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
@@ -38,6 +39,7 @@
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
+	   ;; high friction
 	   (list (cons :mass 5)
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
@@ -46,6 +48,7 @@
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
+	   ;; heavy
 	   (list (cons :mass 7.5)
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
@@ -54,7 +57,44 @@
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
+	   ;; heavy, high friction
 	   (list (cons :mass 7.5)
+		 (cons :origin (float-vector 0 0 0.5))
+		 (cons :inertia (float-vector 10 5.7411 0.788))
+		 (cons :mu1 5.0)
+		 (cons :mu2 5.0)
+		 (cons :fdir1 (float-vector 1 0 0))
+		 (cons :kp 1000000.0)
+		 (cons :kd 100.0))
+	   ;; light
+	   (list (cons :mass 2.5)
+		 (cons :origin (float-vector 0 0 0.5))
+		 (cons :inertia (float-vector 10 5.7411 0.788))
+		 (cons :mu1 0.1)
+		 (cons :mu2 0.1)
+		 (cons :fdir1 (float-vector 1 0 0))
+		 (cons :kp 1000000.0)
+		 (cons :kd 100.0))
+	   ;; light, high friction
+	   (list (cons :mass 2.5)
+		 (cons :origin (float-vector 0 0 0.5))
+		 (cons :inertia (float-vector 10 5.7411 0.788))
+		 (cons :mu1 5.0)
+		 (cons :mu2 5.0)
+		 (cons :fdir1 (float-vector 1 0 0))
+		 (cons :kp 1000000.0)
+		 (cons :kd 100.0))
+	   ;; very heavy
+	   (list (cons :mass 10)
+		 (cons :origin (float-vector 0 0 0.5))
+		 (cons :inertia (float-vector 10 5.7411 0.788))
+		 (cons :mu1 0.1)
+		 (cons :mu2 0.1)
+		 (cons :fdir1 (float-vector 1 0 0))
+		 (cons :kp 1000000.0)
+		 (cons :kd 100.0))
+	   ;; very heavy, high friction
+	   (list (cons :mass 10)
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
 		 (cons :mu1 5.0)
