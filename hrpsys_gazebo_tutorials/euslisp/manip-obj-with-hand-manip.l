@@ -20,8 +20,11 @@
 
 ;; manip ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun manip
-  (&key (manip-input nil) (no-save nil) (obj-num nil))
+  (&key (obj-num nil) (manip-num nil) (manip-input nil) (no-save nil))
 
+  ;; when manip-num is specified, overwrite manip-input
+  (when manip-num
+    (setq manip-input (elt *manip-list* manip-num)))
   (let* ((obj nil) (gp nil) ;; obj and gp of specified num
 	 (objlist-except nil) (gplist-except nil)) ;; obj and gp list which exclude specified num instance
     ;; set obj when obj-num is specified
