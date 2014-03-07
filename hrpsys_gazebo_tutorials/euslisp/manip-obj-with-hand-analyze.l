@@ -272,7 +272,7 @@
 
 ;; search obj ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun get-nearest-obj
-  (class-list-data-test)
+  (class-list-data-test &key (print-class-cnt t))
 
   (let* ((class-list
 	  (get-class-list))
@@ -287,5 +287,6 @@
 	  (mapcar #'(lambda (bool-list-data) (reduce #'+ bool-list-data)) bool-list))
 	 (bool-cnt-max (apply #'max bool-cnt-list))
 	 (bool-cnt-max-idx (position bool-cnt-max bool-cnt-list)))
+    (when print-class-cnt (warn "class-cnt: ~a~%" bool-cnt-list))
     bool-cnt-max-idx
     ))

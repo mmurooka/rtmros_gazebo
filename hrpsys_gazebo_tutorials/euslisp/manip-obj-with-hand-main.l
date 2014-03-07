@@ -134,13 +134,15 @@
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun main-try
-  ()
+  (&key (manip-loop-num nil))
 
   ;; init
   (init)
   ;; loop
   (do-until-key
-   (manip))
+   (manip)
+   (when (> *manip-cnt* manip-loop-num)
+     (return-from nil nil)))
   ;; save
   (save-variable)
   ;; plot
@@ -195,11 +197,23 @@
   (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*)
   ;; test
   (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
-  (let* ((obj-num-res (get-nearest-obj (get-nearest-class))))
+  (let* ((nearest-class (get-nearest-class))
+	 (obj-num-res (get-nearest-obj nearest-class)))
     ;; print
     (print-class-list)
     (warn "res: ~a  ans: ~a  correct: ~a~%" obj-num-res obj-num (equal obj-num-res obj-num)))
   )
+
+(defun main-train-test
+  (&key (manip-loop-num 10) (class-num 5))
+
+  ;; try
+  (main-try :manip-loop-num manip-loop-num)
+  ;; train
+  (main-train :class-num 5)
+  ;; test
+  (dotimes (i (length *objlist*))
+    (main-test :obj-num i :class-num 5)))
 
 (defun main-strategy
   ()
@@ -221,4 +235,3 @@
   ;; plot
   (plot-all-class-data)
   )
- 
