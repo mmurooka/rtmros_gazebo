@@ -61,7 +61,18 @@
   (setq *2dcoord-list-test* nil)
   (setq *eval-list-test* nil)
   (setq *fv-list-test* nil)
-  )
+
+  ;; manip meta parameter
+  (setq *manip-cnt* 0)
+  (setq *manip-dt* 0.002)
+  (setq *manip-loop-num* 500)
+  (setq *update-force-loop-num* 250)
+  (setq *offset-z-list* nil)
+
+  ;; init contact
+  (init-contact)
+
+  nil)
 
 ;; save/load ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun save-variable
