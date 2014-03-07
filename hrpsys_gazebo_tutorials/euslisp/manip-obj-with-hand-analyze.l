@@ -120,19 +120,31 @@
     ))
 
 (defun calc-feature-value
-  (&key (output t))
+  (&key (output t) (contact-data *contact-list*) (2dcoord-data *2dcoord-list*) (no-save nil))
 
-  (setq *fv-list* (make-list (length *contact-list*)))
-  (setq *eval-list* (make-list (length *contact-list*)))
-  (dotimes (i (length *contact-list*)) ;; manip
-    (dotimes (j (length (elt *contact-list* 0))) ;; obj
-      (let* ((contact (elt (elt *contact-list* i) j))
-	     (2dcoord (elt (elt *2dcoord-list* i) j))
+  (cond ((equal no-save nil)
+	 (setq *fv-list* (make-list (length contact-data)))
+	 (setq *eval-list* (make-list (length contact-data))))
+	((equal no-save :test)
+	 (setq *fv-list-test* (make-list 1))
+	 (setq *eval-list-test* (make-list 1))))
+  (dotimes (i (length contact-data)) ;; manip
+    (dotimes (j (length (elt contact-data 0))) ;; obj
+      (let* ((contact (elt (elt contact-data i) j))
+	     (2dcoord (elt (elt 2dcoord-data i) j))
 	     (fv-eval-list (calc-feature-value-one contact 2dcoord)))
-	(push-back (elt fv-eval-list 0) (elt *fv-list* i))
-	(push-back (elt fv-eval-list 1) (elt *eval-list* i)))))
+	(cond ((equal no-save nil)
+	       (push-back (elt fv-eval-list 0) (elt *fv-list* i))
+	       (push-back (elt fv-eval-list 1) (elt *eval-list* i)))
+	      ((equal no-save :test)
+ 	       (push-back (elt fv-eval-list 0) (elt *fv-list-test* 0))
+	       (push-back (elt fv-eval-list 1) (elt *eval-list-test* 0)))
+	      ))))
   (when output
-    (print-feature-value))
+    (cond ((equal no-save nil)
+	   (print-feature-value))
+	  ((equal no-save :test)
+	   (print-feature-value :fv-data *fv-list-test* :eval-data *eval-list-test*))))
   )
 
 ;; classify feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -236,6 +248,11 @@
 
 ;; search class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun get-nearest-class
+  ()
+
+  (mapcar #'get-nearest-class-one (car *fv-list-test*)))
+
+(defun get-nearest-class-one
   (fv)
 
   (let* ((dist-list
