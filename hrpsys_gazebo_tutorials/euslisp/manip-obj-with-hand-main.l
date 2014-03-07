@@ -134,7 +134,7 @@
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun main-try
-  (&key (manip-loop-num nil))
+  (&key (manip-loop-num nil) (no-plot nil))
 
   ;; init
   (init)
@@ -146,11 +146,11 @@
   ;; save
   (save-variable)
   ;; plot
-  (plot-all)
+  (unless no-plot (plot-all))
   )
 
 (defun main-train
-  (&key (class-num 3) (no-play t) (no-analyze nil))
+  (&key (class-num 3) (no-play t) (no-analyze nil) (no-plot nil))
 
   ;; init
   (init)
@@ -165,7 +165,8 @@
     (print-feature-value :class-num i)
     (print-class-info :class-num i)
     ;; plot
-    (plot-all-class-data :class-num i :save nil)
+    (unless no-plot 
+      (plot-all-class-data :class-num i :save nil))
     ;; manip
     (unless no-play
       (manip-all-class-data :class-num i))
@@ -176,7 +177,7 @@
   )
 
 (defun main-test
-  (&key (obj-num 0) (class-num 3))
+  (&key (obj-num 0) (class-num 3) (no-plot nil))
 
   ;; init
   (init-variable-test)
@@ -194,7 +195,8 @@
   (dolist (manip *manip-list*)
     (manip :obj-num obj-num :manip-input manip :no-save :test))
   ;; plot
-  (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*)
+  (unless no-plot 
+    (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*))
   ;; test
   (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
   (let* ((nearest-class (get-nearest-class))
@@ -208,12 +210,12 @@
   (&key (manip-loop-num 10) (class-num 5))
 
   ;; try
-  (main-try :manip-loop-num manip-loop-num)
+  (main-try :manip-loop-num manip-loop-num :no-plot t)
   ;; train
-  (main-train :class-num 5)
+  (main-train :class-num 5 :no-plot t)
   ;; test
   (dotimes (i (length *objlist*))
-    (main-test :obj-num i :class-num 5)))
+    (main-test :obj-num i :class-num 5 :no-plot t)))
 
 (defun main-strategy
   ()
