@@ -59,6 +59,8 @@
   ;; test result
   (setq *contact-list-test* nil)
   (setq *2dcoord-list-test* nil)
+  (setq *eval-list-test* nil)
+  (setq *fv-list-test* nil)
   )
 
 ;; save/load ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
