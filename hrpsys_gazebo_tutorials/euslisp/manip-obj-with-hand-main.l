@@ -183,7 +183,12 @@
   (load-variable)
   ;; manip
   (dolist (manip *manip-list*)
-    (manip :obj-num obj-num :manip-input manip :no-save :obj-num))
+    (manip :obj-num obj-num :manip-input manip :no-save :test))
+  ;; plot
+  (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*)
+  ;; test
+  (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
+  (get-nearest-class)
   )
 
 (defun main-strategy

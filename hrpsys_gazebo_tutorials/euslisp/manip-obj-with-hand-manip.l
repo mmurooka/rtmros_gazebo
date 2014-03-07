@@ -141,7 +141,7 @@
 	     (push-back contact-tmp *contact-list*)
 	     (push-back 2dcoord-tmp *2dcoord-list*)
 	     (incf *manip-cnt*))
-	    ((equal no-save :obj-num)
+	    ((equal no-save :test)
 	     (push-back (list (elt contact-tmp obj-num)) *contact-list-test*)
 	     (push-back (list (elt 2dcoord-tmp obj-num)) *2dcoord-list-test*)
 	     (incf *manip-cnt*)))
