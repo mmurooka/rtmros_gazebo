@@ -62,13 +62,13 @@
 	       (y-prev (elt (car (elt 2dcoord (- i 1))) 1))
 	       (xy-vel (float-vector (- x-crnt x-prev) (- y-crnt y-prev)))
 	       (d-vel (abs (/ (norm xy-vel) *manip-dt*)))
-	       (d-vel-thre 0.1)
+	       (d-vel-thre 0.3)
 	       (d-vel-new (if (> d-vel d-vel-thre) d-vel 0))
 	       (xy-unit-vel (if (< d-vel d-vel-thre) (float-vector 0 0) (normalize-vector xy-vel)))
 	       (yaw-crnt (cadr (elt 2dcoord i)))
 	       (yaw-prev (cadr (elt 2dcoord (- i 1))))
 	       (yaw-vel (abs (/ (- yaw-crnt yaw-prev) *manip-dt*)))
-	       (yaw-vel-thre 0.1)
+	       (yaw-vel-thre 0.3)
 	       (yaw-vel-new (if (> yaw-vel yaw-vel-thre) yaw-vel 0))
 	       (yaw-unit-vel (float-vector (cos yaw-crnt) (sin yaw-crnt)))
 	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel)))
@@ -78,10 +78,19 @@
 
 	  ;; (print (list yaw-vel d-vel xy-unit-vel yaw-unit-vel)) ;; for debug
 	  (cond ((equal cont-num -1) ;; when falling down
-		 (setq fv-fall-down (min (+ fv-fall-down 10) fall-down-max)))
-		((equal cont-num 0) ;; when floating
+		 (setq fv-fall-down (min (+ fv-fall-down 10) fall-down-max))
 		 ;; each contact state
-		 (setq fv-float (min (+ fv-float 10) float-max)))
+		 (setf (elt fv-yaw-vel 0) (max (+ (elt fv-yaw-vel 0) -1) (- fall-down-max)))
+		 (setf (elt fv-d-vel 0) (max (+ (elt fv-d-vel 0) -1) (- fall-down-max)))
+		 (setf (elt fv-cor-xy-yaw 0) (max (+ (elt fv-cor-xy-yaw 0) -1) (- fall-down-max)))
+		 )
+		((equal cont-num 0) ;; when floating
+		 (setq fv-float (min (+ fv-float 10) float-max))
+		 ;; each contact state
+		 (setf (elt fv-yaw-vel 0) (min (+ (elt fv-yaw-vel 0) 1) float-max))
+		 (setf (elt fv-d-vel 0) (min (+ (elt fv-d-vel 0) 1) float-max))
+		 (setf (elt fv-cor-xy-yaw 0) (min (+ (elt fv-cor-xy-yaw 0) 1) float-max))
+		 )
 		((>= cont-num 0)
 		 ;; each contact state
 		 (setf (elt fv-yaw-vel cont-num) (+ (elt fv-yaw-vel cont-num) yaw-vel-new))
@@ -90,14 +99,15 @@
 		 ;; sum
 		 (setf (elt fv-yaw-vel 4) (+ (elt fv-yaw-vel 4) yaw-vel))
 		 (setf (elt fv-d-vel 4) (+ (elt fv-d-vel 4) d-vel))
-		 (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) cor-xy-yaw))))
+		 (setf (elt fv-cor-xy-yaw 4) (+ (elt fv-cor-xy-yaw 4) cor-xy-yaw))
+		 ))
 	  )))
     (setq fv-eval (calc-manip-eval (car (last contact)) (car (last 2dcoord))))
 
     ;; square root instead of normalize
     (dotimes (cont-num 4)
-      (setf (elt fv-yaw-vel cont-num) (sqrt (elt fv-yaw-vel cont-num)))
-      (setf (elt fv-d-vel cont-num) (sqrt (elt fv-d-vel cont-num)))
+      (setf (elt fv-yaw-vel cont-num) (sqrt-with-sgn (elt fv-yaw-vel cont-num)))
+      (setf (elt fv-d-vel cont-num) (sqrt-with-sgn (elt fv-d-vel cont-num)))
       (setf (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw cont-num))
       ;;(setq fv-float (sqrt fv-float))
       ;;(setq fv-fall-down (sqrt fv-fall-down))
@@ -144,7 +154,11 @@
 		 *all-orig-data*)))
   ;; classify
   ;; (load "/home/murooka/prog/jsk-ros-pkg-unreleased.bak.0218/jsk_rosmake_libs/euslib/jsk/lmeds.l")
-  (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
+  (dotimes (i 10)
+    (setq *all-class-data* (k-means *all-orig-data* class-num :key #'(lambda (x) (cdr (assoc :fv x))) :debug nil))
+    (when (not (equal *all-class-data* :error))
+      (return-from nil nil)))
+
   ;; sort result depending on element number
   (unless (equal *all-class-data* :error)
     (setf (elt *all-class-data* 1)
