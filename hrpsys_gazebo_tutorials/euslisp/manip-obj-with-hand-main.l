@@ -148,7 +148,7 @@
   )
 
 (defun main2
-  (&optional (class-num 3) (no-play t) (no-analyze nil))
+  (&key (class-num 3) (no-play t) (no-analyze nil))
 
   ;; init
   (init)
