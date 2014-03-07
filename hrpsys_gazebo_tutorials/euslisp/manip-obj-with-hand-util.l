@@ -295,3 +295,11 @@
     (send c :add-handle (make-cascoords :pos (float-vector (- (/ d 2)) (- (/ w 2)) 0)
 					:rot (unit-matrix 3) :name :right-rear-edge))
     c))
+
+;; mass ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun sqrt-with-sgn
+  (x)
+
+  (cond ((eps= (float x) 0.0) 0.0)
+	(t (* (/ x (abs x)) (sqrt (abs x)))))
+  )
