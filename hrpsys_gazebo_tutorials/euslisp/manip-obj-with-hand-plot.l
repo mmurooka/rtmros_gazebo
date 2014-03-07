@@ -43,10 +43,10 @@
 
 ;; all ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun plot-all
-  ()
+  (&key (contact-data *contact-list*) (2dcoord-data *2dcoord-list*))
 
-  (plot-contact)
-  (plot-2dcoord))
+  (plot-contact :data contact-data)
+  (plot-2dcoord :data 2dcoord-data))
 
 ;; contact ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun plot-contact
