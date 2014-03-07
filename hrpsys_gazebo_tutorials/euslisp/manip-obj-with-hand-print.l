@@ -129,18 +129,27 @@
 
 ;; manip
 (defun print-manip-info
-  (&key (manip-num nil))
+  (&key (manip-num nil) (manip-eval-list-flag nil))
 
   (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
-  (warn " ~10a  ~10a  ~20a~%"
-	"id\\value" "eval" "eval-list")
+
+  (cond (manip-eval-list-flag
+	 (warn " ~10a  ~80a  ~10a  ~20a~%"
+	       "id\\value" "force" "eval" "eval-list"))
+	(t
+	 (warn " ~10a  ~80a  ~10a~%"
+	       "id\\value" "force" "eval")))
   (dotimes (i (length *eval-list*))
     (let* (manip-eval manip-eval-list)
       (when manip-num (setq i manip-num)) ;; when manip is specified
       (setq manip-eval-list (elt *eval-list* i))
       (setq manip-eval (/ (reduce #'+ manip-eval-list) (length manip-eval-list)))
-      (warn " ~10a  ~10a  ~20a~%"
-	    i manip-eval manip-eval-list)
+      (cond (manip-eval-list-flag
+	     (warn " ~10a  ~80a  ~10a  ~20a~%"
+		   i (list (elt (elt *manip-list* i) 0) (elt (elt *manip-list* i) (1- (length *manip-list*)))) manip-eval manip-eval-list))
+	    (t
+	     (warn " ~10a  ~80a  ~10a~%"
+		   i (list (elt (elt *manip-list* i) 0) (elt (elt *manip-list* i) (1- (length *manip-list*)))) manip-eval)))
       (when manip-num (return-from nil nil)) ;; when manip is specified
       ))
   (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")
