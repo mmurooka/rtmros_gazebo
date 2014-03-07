@@ -207,7 +207,7 @@
   )
 
 (defun main-train-test
-  (&key (manip-loop-num 10) (class-num 5))
+  (&key (manip-loop-num 15) (class-num 5))
 
   ;; try
   (main-try :manip-loop-num manip-loop-num :no-plot t)
