@@ -246,6 +246,15 @@
 	  )))
     ))
 
+(defun get-class-list
+  (&key (obj-num nil))
+
+  (mapcar
+   #'(lambda (i) (mapcar #'(lambda (class-list-data) (elt class-list-data i)) *class-list*))
+   (cond (obj-num (list obj-num))
+	 (t (range (length (elt *class-list* 0)))))
+   ))
+
 ;; search class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun get-nearest-class
   ()
@@ -260,3 +269,23 @@
 	 (min-dist (apply #'min dist-list))
 	 (min-id (position min-dist dist-list)))
     min-id))
+
+;; search obj ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun get-nearest-obj
+  (class-list-data-test)
+
+  (let* ((class-list
+	  (get-class-list))
+	 (bool-list
+	  (mapcar
+	   #'(lambda (class-list-data)
+	       (mapcar #'(lambda (class-list-data-value class-list-data-test-value)
+			   (if (equal class-list-data-value class-list-data-test-value) 1 0))
+		       class-list-data class-list-data-test))
+	   class-list))
+	 (bool-cnt-list
+	  (mapcar #'(lambda (bool-list-data) (reduce #'+ bool-list-data)) bool-list))
+	 (bool-cnt-max (apply #'max bool-cnt-list))
+	 (bool-cnt-max-idx (position bool-cnt-max bool-cnt-list)))
+    bool-cnt-max-idx
+    ))

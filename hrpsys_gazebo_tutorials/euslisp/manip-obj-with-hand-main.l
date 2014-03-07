@@ -194,7 +194,7 @@
   ;; test
   (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
   (let* ((obj-num-res (get-nearest-obj (get-nearest-class))))
-    (warn "res: ~a  ans: ~a  correct: ~a" obj-num-res obj-num (equal obj-num-res obj-num)))
+    (warn "res: ~a  ans: ~a  correct: ~a~%" obj-num-res obj-num (equal obj-num-res obj-num)))
   )
 
 (defun main-strategy
