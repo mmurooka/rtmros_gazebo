@@ -41,11 +41,16 @@
   (setq *manip-dt* 0.002)
   (setq *manip-loop-num* 500)
   (setq *update-force-loop-num* 250)
+  (setq *offset-z-list* nil)
 
   ;; strategy
   (setq *strategy-manip-list* nil)
   (gen-all-strategy)
-  )
+
+  ;; init contact
+  (init-contact)
+
+  nil)
 
 
 ;; save/load ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -76,15 +81,18 @@
 
   (dotimes (i (length *objlist*))
     (when (or (not update-flag) (elt update-flag i))
-    (update-coord-cupboard-one :obj (elt *objlist* i) :gp (elt *gplist* i))))
+      (update-coord-cupboard-one
+       :obj (elt *objlist* i) :gp (elt *gplist* i)
+       :offset-z (cond (*offset-z-list* (elt *offset-z-list* i))
+		       (t 0)))))
   )
 
 (defun update-coord-cupboard-one
-  (&key (obj (car *objlist*)) (gp (car *gplist*)))
+  (&key (obj (car *objlist*)) (gp (car *gplist*)) (offset-z 0))
 
   ;; set gazebo model pose to eus model
   (let* ((gzb-pose (send (send gp :get-pose) :copy-worldcoords))
-	 (trans-gzb-pose (send gzb-pose :translate #f(0 0 -500.5) :local))
+	 (trans-gzb-pose (send gzb-pose :translate (float-vector 0 0 offset-z) :local))
 	 (gzb-pos (send trans-gzb-pose :worldpos)))
     (send obj :newcoords trans-gzb-pose)
     ;; (send obj :newcoords (make-coords :pos (float-vector 0 0 (elt gzb-pos 2)) :rot (send gzb-pose :rot))) ;; ignore x,y motion
@@ -118,17 +126,44 @@
     (send right-ar :newcoords (send (send (send (send f2coord :copy-worldcoords) :rotate -pi/2 :z) :rotate 0 :x) :translate (float-vector 0 l2 0) :local))
     ))
 
-;; contact
-(defun update-contact-cupboard
-  (&key (update-flag nil))
+;; init contact
+(defun init-contact
+  ()
 
-  (dotimes (i (length *objlist*))
-    (when (or (not update-flag) (elt update-flag i))
-      (update-contact-cupboard-one :obj (elt *objlist* i))))
+  (setq *offset-z-list* nil)
+  ;; set force and pose
+  (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
+  (send-all *gplist* :set-pose (make-coords))
+  ;; wait
+  (unix::usleep (* 1000 1000))
+  ;; update coord
+  (update-coord-cupboard)
+  (send *pickview* :draw-objects)
+  ;; calc contact thre
+  (setq *offset-z-list*
+	(mapcar #'- (update-contact-cupboard :return-contact-z t)))
+  ;; update coord again
+  (update-coord-cupboard)
+  (send *pickview* :draw-objects)
   )
 
+;; contact
+(defun update-contact-cupboard
+  (&key (update-flag nil) (return-contact-z nil))
+
+  (let* (ret-tmp (ret nil))
+    (dotimes (i (length *objlist*))
+      (when (or (not update-flag) (elt update-flag i))
+	(setq ret-tmp
+	      (update-contact-cupboard-one
+	       :obj (elt *objlist* i) :return-contact-z return-contact-z)))
+      (when return-contact-z
+	(push-back (/ (reduce #'+ ret-tmp) (length ret-tmp)) ret))
+      )
+    ret))
+
 (defun update-contact-cupboard-one
-  (&key (obj *obj1*))
+  (&key (obj *obj1*) (return-contact-z nil))
 
   (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
@@ -154,6 +189,8 @@
 	  ((position t (send obj :get :lcont)) (send obj :put :contact :line))
 	  ((position t (send obj :get :vcont)) (send obj :put :contact :vertex))
 	  (t (send obj :put :contact :nil)))
+    (cond (return-contact-z bottom-vertices-z)
+	  (t nil))
     ))
 
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
