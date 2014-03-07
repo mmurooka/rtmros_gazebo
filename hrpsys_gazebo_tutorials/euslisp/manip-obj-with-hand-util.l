@@ -53,6 +53,13 @@
 
   nil)
 
+(defun init-variable-test
+  ()
+
+  ;; test result
+  (setq *contact-list-test* nil)
+  (setq *2dcoord-list-test* nil)
+  )
 
 ;; save/load ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun save-variable
