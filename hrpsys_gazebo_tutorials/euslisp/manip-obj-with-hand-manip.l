@@ -60,6 +60,10 @@
 	   (draw-interval 10))
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
+      ;; when obj-num is specified, set float-flag of unspecified objects as t
+      (when obj-num
+	(setq fall-down-flag (make-list (length *objlist*) :initial-element t))
+	(setf (elt fall-down-flag obj-num) nil))
       (dotimes (i loop-num)
 	;; update force
 	(setq update-force-flag nil)
