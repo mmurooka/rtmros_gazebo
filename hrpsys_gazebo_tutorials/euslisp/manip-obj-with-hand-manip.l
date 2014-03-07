@@ -141,19 +141,25 @@
 (defun manip-all-class-data
   (&key (class-num nil))
 
-  (dotimes (i (length (elt *all-class-data* 1)))
-    (when class-num (setq i class-num))
-    (let* ((manip-class-list
-	    (mapcar #'(lambda (x) (cdr (assoc :manip x)))
-		    (elt (elt *all-class-data* 1) i))))
-
-      (dotimes (j (length manip-class-list))
-	(warn "class: ~a/~a  manip: ~a/~a ~%"
-	      (+ i 1) (length (elt *all-class-data* 1)) (+ j 1) (length manip-class-list))
-	(manip :manip-input (elt manip-class-list j) :no-save t))
+  (let* ((class-data-list (elt *all-class-data* 1)))
+    (dotimes (i (length class-data-list)) ;; class data list
+      (when class-num (setq i class-num)) ;; when class-num is specified
+      (dotimes (j (length (elt class-data-list i))) ;; class dat
+	(let* ((class-data
+		(elt (elt class-data-list i) j))
+	       (obj-id
+		(cdr (assoc :obj-id class-data)))
+	       (manip-id
+		(cdr (assoc :manip-id class-data))))
+	  (warn "class: ~a/~a  elem: ~a/~a  (obj,manip): (~a,~a) ~%"
+		(+ i 1) (length class-data-list)
+		(+ j 1) (length (elt class-data-list i))
+		obj-id manip-id)
+	  (manip :manip-input (elt *manip-list* manip-id) :obj-num obj-id :no-save t)
+	  ))
+      (when class-num (return-from nil nil)) ;; when class-num is specified
       ;; wait
       (read-line))
-    (when class-num (return-from nil nil))
     ))
 
 ;; util ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
