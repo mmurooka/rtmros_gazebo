@@ -174,13 +174,18 @@
   )
 
 (defun main-test
-  (&key (obj-num 0))
+  (&key (obj-num 0) (class-num 3))
 
   ;; init
-  (init)
   (init-variable-test)
   ;; load
   (load-variable)
+  ;; analyze
+  (unless (and (boundp '*all-class-data*) (equal (length *all-class-data*) 3))
+    (warn "analyze training data~%")
+    (unless (analyze :class-num class-num)
+      (warn "failed classification~%")
+      (return-from main2 nil)))
   ;; manip
   (dolist (manip *manip-list*)
     (manip :obj-num obj-num :manip-input manip :no-save :test))
@@ -188,7 +193,8 @@
   (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*)
   ;; test
   (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
-  (get-nearest-class)
+  (let* ((obj-num-res (get-nearest-obj (get-nearest-class))))
+    (warn "res: ~a  ans: ~a  correct: ~a" obj-num-res obj-num (equal obj-num-res obj-num)))
   )
 
 (defun main-strategy
