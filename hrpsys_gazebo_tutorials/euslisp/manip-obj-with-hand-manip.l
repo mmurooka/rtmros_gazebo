@@ -60,10 +60,6 @@
 	   (draw-interval 10))
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
-      ;; when obj-num is specified, set float-flag of unspecified objects as t
-      (when obj-num
-	(setq fall-down-flag (make-list (length *objlist*) :initial-element t))
-	(setf (elt fall-down-flag obj-num) nil))
       (dotimes (i loop-num)
 	;; update force
 	(setq update-force-flag nil)
@@ -97,6 +93,10 @@
 	  (send *pickview* :draw-objects :flush nil)
 	  (draw-contact-cupboard)
 	  (send *viewer* :flush))
+	;; when obj-num is specified, set float-flag of unspecified objects as t
+	(when obj-num
+	  (setq fall-down-flag (make-list (length *objlist*) :initial-element t))
+	  (setf (elt fall-down-flag obj-num) nil))
 	(unless (equal i 0) ;; I don't know why, but the first coord is not updated.
 	  ;; store manip, contact and 2dcoord
 	  (push-back (list f1 f2) manip-tmp)
@@ -136,14 +136,18 @@
 							      :initial-element (list (concatenate float-vector (send obj :get :2d-pos) (float-vector 0))
 										     (send obj :get :2d-angle)))))))))
       ;; save manip data to global variable
-      (unless no-save
-	(push-back manip-tmp *manip-list*)
-	(push-back contact-tmp *contact-list*)
-	(push-back 2dcoord-tmp *2dcoord-list*)
-	(incf *manip-cnt*))
+      (cond ((equal no-save nil)
+	     (push-back manip-tmp *manip-list*)
+	     (push-back contact-tmp *contact-list*)
+	     (push-back 2dcoord-tmp *2dcoord-list*)
+	     (incf *manip-cnt*))
+	    ((equal no-save :obj-num)
+	     (push-back (list (elt contact-tmp obj-num)) *contact-list-test*)
+	     (push-back (list (elt 2dcoord-tmp obj-num)) *2dcoord-list-test*)
+	     (incf *manip-cnt*)))
       (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
-      )
-    nil))
+      ))
+  nil)
 
 (defun manip-all-class-data
   (&key (class-num nil))
