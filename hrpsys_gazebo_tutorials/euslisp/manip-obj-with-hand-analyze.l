@@ -62,13 +62,13 @@
 	       (y-prev (elt (car (elt 2dcoord (- i 1))) 1))
 	       (xy-vel (float-vector (- x-crnt x-prev) (- y-crnt y-prev)))
 	       (d-vel (abs (/ (norm xy-vel) *manip-dt*)))
-	       (d-vel-thre 0.3)
+	       (d-vel-thre 0.01)
 	       (d-vel-new (if (> d-vel d-vel-thre) d-vel 0))
 	       (xy-unit-vel (if (< d-vel d-vel-thre) (float-vector 0 0) (normalize-vector xy-vel)))
 	       (yaw-crnt (cadr (elt 2dcoord i)))
 	       (yaw-prev (cadr (elt 2dcoord (- i 1))))
 	       (yaw-vel (abs (/ (- yaw-crnt yaw-prev) *manip-dt*)))
-	       (yaw-vel-thre 0.3)
+	       (yaw-vel-thre 0.01)
 	       (yaw-vel-new (if (> yaw-vel yaw-vel-thre) yaw-vel 0))
 	       (yaw-unit-vel (float-vector (cos yaw-crnt) (sin yaw-crnt)))
 	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel)))
@@ -76,7 +76,7 @@
 	       (fall-down-max 500)
 	       )
 
-	  ;; (print (list yaw-vel d-vel xy-unit-vel yaw-unit-vel)) ;; for debug
+	  ;;(print (list yaw-crnt yaw-unit-vel xy-unit-vel cor-xy-yaw)) ;; for debug
 	  (cond ((equal cont-num -1) ;; when falling down
 		 (setq fv-fall-down (min (+ fv-fall-down 10) fall-down-max))
 		 ;; each contact state
@@ -106,7 +106,7 @@
 
     ;; square root instead of normalize
     (dotimes (cont-num 4)
-      (setf (elt fv-yaw-vel cont-num) (sqrt-with-sgn (elt fv-yaw-vel cont-num)))
+      ;;(setf (elt fv-yaw-vel cont-num) (sqrt-with-sgn (elt fv-yaw-vel cont-num)))
       (setf (elt fv-d-vel cont-num) (sqrt-with-sgn (elt fv-d-vel cont-num)))
       (setf (elt fv-cor-xy-yaw cont-num) (elt fv-cor-xy-yaw cont-num))
       ;;(setq fv-float (sqrt fv-float))
