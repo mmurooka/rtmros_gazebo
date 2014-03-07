@@ -233,3 +233,13 @@
 	  (setf (elt (elt *class-list* manip-id) obj-id) i)
 	  )))
     ))
+
+;; search class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun get-nearest-class
+  (fv)
+
+  (let* ((dist-list
+	  (mapcar #'(lambda (class-fv) (norm (v- fv class-fv))) *class-fv*))
+	 (min-dist (apply #'min dist-list))
+	 (min-id (position min-dist dist-list)))
+    min-id))
