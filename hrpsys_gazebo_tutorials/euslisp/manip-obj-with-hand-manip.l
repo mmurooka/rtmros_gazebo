@@ -93,10 +93,10 @@
 	  (send *pickview* :draw-objects :flush nil)
 	  (draw-contact-cupboard)
 	  (send *viewer* :flush))
-	;; when obj-num is specified, set float-flag of unspecified objects as t
-	(when obj-num
-	  (setq fall-down-flag (make-list (length *objlist*) :initial-element t))
-	  (setf (elt fall-down-flag obj-num) nil))
+	;; ;; when obj-num is specified, set float-flag of unspecified objects as t
+	;; (when obj-num
+	;;   (setq fall-down-flag (make-list (length *objlist*) :initial-element t))
+	;;   (setf (elt fall-down-flag obj-num) nil))
 	(unless (equal i 0) ;; I don't know why, but the first coord is not updated.
 	  ;; store manip, contact and 2dcoord
 	  (push-back (list f1 f2) manip-tmp)

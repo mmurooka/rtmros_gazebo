@@ -203,7 +203,7 @@
 	 (obj-num-res (get-nearest-obj nearest-class)))
     ;; print
     (print-class-list)
-    (warn "res: ~a  ans: ~a  correct: ~a~%" obj-num-res obj-num (equal obj-num-res obj-num)))
+    (warn "ans: ~a  res: ~a  correct: ~a~%" obj-num-res obj-num (equal obj-num-res obj-num)))
   )
 
 (defun main-train-test
