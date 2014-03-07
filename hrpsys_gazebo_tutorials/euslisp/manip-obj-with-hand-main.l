@@ -181,7 +181,9 @@
   ;; load
   (load-variable)
   ;; analyze
-  (unless (and (boundp '*all-class-data*) (equal (length *all-class-data*) 3))
+  (unless (and (boundp '*all-class-data*)
+	       (equal (length *all-class-data*) 3)
+	       (equal (length (elt *all-class-data* 1)) class-num))
     (warn "analyze training data~%")
     (unless (analyze :class-num class-num)
       (warn "failed classification~%")
@@ -194,6 +196,8 @@
   ;; test
   (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
   (let* ((obj-num-res (get-nearest-obj (get-nearest-class))))
+    ;; print
+    (print-class-list)
     (warn "res: ~a  ans: ~a  correct: ~a~%" obj-num-res obj-num (equal obj-num-res obj-num)))
   )
 

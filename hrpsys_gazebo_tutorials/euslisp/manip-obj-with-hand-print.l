@@ -229,3 +229,28 @@
   (warn "~%")
   (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")  
   )
+
+
+;; print util ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun print-class-list
+  ()
+
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")  
+  (warn "-*- train -*-~%")
+  (print-class-list-train)
+  (warn "-*- test -*-~%")
+  (print-class-list-test)
+  (warn "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*~%")  
+  )
+
+(defun print-class-list-train
+  ()
+
+  (dolist (class-list-data (get-class-list))
+    (warn "~a~%" class-list-data)))
+
+(defun print-class-list-test
+  ()
+
+  (warn "~a~%" (get-nearest-class))
+  )
