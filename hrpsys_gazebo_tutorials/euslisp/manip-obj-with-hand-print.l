@@ -26,15 +26,15 @@
 ;; print info ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; feaure-value
 (defun print-feature-value
-  (&key (class-num nil) (obj-num nil) (manip-num nil))
+  (&key (fv-data *fv-list*) (eval-data *eval-list*) (class-num nil) (obj-num nil) (manip-num nil))
 
   (let* (fv-list eval-list)
     (cond (class-num
 	   (setq fv-list (list (mapcar #'(lambda (x) (cdr (assoc :fv x))) (elt (elt *all-class-data* 1) class-num))))
 	   (setq eval-list (list (mapcar #'(lambda (x) (cdr (assoc :eval x))) (elt (elt *all-class-data* 1) class-num)))))
 	  (t
-	   (setq fv-list *fv-list*)
-	   (setq eval-list *eval-list*)))
+	   (setq fv-list fv-data)
+	   (setq eval-list eval-data)))
     (dotimes (j (length fv-list)) ;; manip
       (when manip-num (setq j manip-num)) ;; when manip is specified
       (dotimes (k (length (elt fv-list 0))) ;; obj
