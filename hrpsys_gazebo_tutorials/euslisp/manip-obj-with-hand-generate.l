@@ -26,61 +26,61 @@
 
 ;; cupboard
 (defun generate-cupboard
-  ()
+  (&key (error-ratio nil))
 
   (let* ((obj-pp-list ;; pysical parameter list
 	  (list
 	   ;; default
-	   (list (cons :mass 5)
+	   (list (cons :mass (get-value-with-error 5 error-ratio))
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
-		 (cons :mu1 0.1)
-		 (cons :mu2 0.1)
+		 (cons :mu1 (get-value-with-error 0.1 error-ratio))
+		 (cons :mu2 (get-value-with-error 0.1 error-ratio))
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
 	   ;; high friction
-	   (list (cons :mass 5)
+	   (list (cons :mass (get-value-with-error 5 error-ratio))
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
-		 (cons :mu1 50.0)
-		 (cons :mu2 50.0)
+		 (cons :mu1 (get-value-with-error 50.0 error-ratio))
+		 (cons :mu2 (get-value-with-error 50.0 error-ratio))
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
 	   ;; heavy
-	   (list (cons :mass 7.5)
+	   (list (cons :mass (get-value-with-error 7.5 error-ratio))
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
-		 (cons :mu1 0.1)
-		 (cons :mu2 0.1)
+		 (cons :mu1 (get-value-with-error 0.1 error-ratio))
+		 (cons :mu2 (get-value-with-error 0.1 error-ratio))
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
 	   ;; heavy, high friction
-	   (list (cons :mass 7.5)
+	   (list (cons :mass (get-value-with-error 7.5 error-ratio))
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
-		 (cons :mu1 50.0)
-		 (cons :mu2 50.0)
+		 (cons :mu1 (get-value-with-error 50.0 error-ratio))
+		 (cons :mu2 (get-value-with-error 50.0 error-ratio))
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
 	   ;; light
-	   (list (cons :mass 2.5)
+	   (list (cons :mass (get-value-with-error 2.5 error-ratio))
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
-		 (cons :mu1 0.1)
-		 (cons :mu2 0.1)
+		 (cons :mu1 (get-value-with-error 0.1 error-ratio))
+		 (cons :mu2 (get-value-with-error 0.1 error-ratio))
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
 	   ;; very heavy
-	   (list (cons :mass 10)
+	   (list (cons :mass (get-value-with-error 10 error-ratio))
 		 (cons :origin (float-vector 0 0 0.5))
 		 (cons :inertia (float-vector 10 5.7411 0.788))
-		 (cons :mu1 0.1)
-		 (cons :mu2 0.1)
+		 (cons :mu1 (get-value-with-error 0.1 error-ratio))
+		 (cons :mu2 (get-value-with-error 0.1 error-ratio))
 		 (cons :fdir1 (float-vector 1 0 0))
 		 (cons :kp 1000000.0)
 		 (cons :kd 100.0))
@@ -183,3 +183,16 @@
       (warn "generate ~a~%" (format nil "model~d.urdf" cnt))
       )
     ))
+
+
+;; util function  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; error
+(defun get-value-with-error
+  (value &optional (error-ratio nil)) ;; add error of plus minus error-ratio [%]
+
+  (unless error-ratio
+    (return-from get-value-with-error value))
+  (let* ((error-range (* value (/ error-ratio 100.0)))
+	 (error-value (- (random (* error-range)) error-range))
+	 (value-with-error (+ value error-value)))
+    value-with-error))
