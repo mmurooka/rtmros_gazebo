@@ -136,7 +136,7 @@
   (init :model-name "drum_wh"))
 
 
-;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; general main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun main-try
   (&key (manip-loop-num nil) (no-plot nil))
 
@@ -241,3 +241,28 @@
   ;; plot
   (plot-all-class-data)
   )
+
+
+;; special main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun main-train-cupboard
+  ()
+
+  ;; generate
+  (generate-cupboard)
+  ;; init
+  (init :model-num 6)
+  ;; try
+  (main-try :manip-loop-num 15 :no-plot t))
+
+(defun main-test-cupboard
+  ()
+
+  ;; generate
+  (generate-cupboard :error-ratio 5)
+  ;; init
+  (init :model-num 6 :force t)
+  ;; train
+  (main-train :class-num 5 :no-plot t)
+  ;; test
+  (dotimes (i (length *objlist*))
+    (main-test :obj-num i :class-num 5 :no-plot t)))
