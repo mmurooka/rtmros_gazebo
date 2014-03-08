@@ -261,6 +261,12 @@
     manip-id-list-sort
     ))
 
+(defun get-sort-manip-force
+  ()
+
+  (mapcar #'(lambda (i) (car (get-manip-force :manip-num i)))
+	  (get-sort-manip-id)))
+
 ;; update class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun update-class-list
   ()
