@@ -39,11 +39,7 @@
   (setq *class-fv* nil)
 
   ;; manip meta parameter
-  (setq *manip-cnt* 0)
-  (setq *manip-dt* 0.01)
-  (setq *manip-loop-num* 300)
-  (setq *update-force-loop-num* 150)
-  (setq *offset-z-list* nil)
+  (init-manip-param)
 
   ;; strategy
   (setq *strategy-manip-list* nil)
@@ -64,14 +60,22 @@
   (setq *fv-list-test* nil)
 
   ;; manip meta parameter
+  (init-manip-param)
+
+  ;; init contact
+  (init-contact)
+
+  nil)
+
+(defun init-manip-param
+  ()
+
+  ;; manip meta parameter
   (setq *manip-cnt* 0)
   (setq *manip-dt* 0.01)
   (setq *manip-loop-num* 300)
   (setq *update-force-loop-num* 150)
   (setq *offset-z-list* nil)
-
-  ;; init contact
-  (init-contact)
 
   nil)
 
@@ -122,14 +126,15 @@
 
 ;; ar coord
 (defun update-ar-coord
-  (f1 f2)
+  (f1 f2 &key (update-flag nil))
 
   (dotimes (i (length *objlist*))
-    (eval (list 'update-ar-coord-one 'f1 'f2
-		:lhand (read-from-string (format nil "*lhand~d*" (+ i 1)))
-		:rhand (read-from-string (format nil "*rhand~d*" (+ i 1)))
-		:left-ar (read-from-string (format nil "*left-ar~d*" (+ i 1)))
-		:right-ar (read-from-string (format nil "*right-ar~d*" (+ i 1)))))))
+    (when (or (not update-flag) (elt update-flag i))
+      (eval (list 'update-ar-coord-one 'f1 'f2
+		  :lhand (read-from-string (format nil "*lhand~d*" (+ i 1)))
+		  :rhand (read-from-string (format nil "*rhand~d*" (+ i 1)))
+		  :left-ar (read-from-string (format nil "*left-ar~d*" (+ i 1)))
+		  :right-ar (read-from-string (format nil "*right-ar~d*" (+ i 1))))))))
 
 (defun update-ar-coord-one
   (f1 f2 &key (lhand *lhand*) (rhand *rhand*) (left-ar *left-ar*) (right-ar *right-ar*))
@@ -218,14 +223,15 @@
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; once
 (defun draw-contact-cupboard
-  ()
+  (&key (update-flag nil))
 
   (dotimes (i (length *objlist*))
-    (let* ((obj (elt *objlist* i))
-	   (pos (float-vector 10 (+ 20 (* i 15))))
-	   (output-string
-	    (format nil "~a : ~a" i (string (send obj :get :contact)))))
-      (draw-contact-cupboard-one :obj obj :pos pos :output-string output-string))
+    (when (or (not update-flag) (elt update-flag i))
+      (let* ((obj (elt *objlist* i))
+	     (pos (float-vector 10 (+ 20 (* i 15))))
+	     (output-string
+	      (format nil "~a : ~a" i (string (send obj :get :contact)))))
+	(draw-contact-cupboard-one :obj obj :pos pos :output-string output-string)))
     ))
 
 (defun draw-contact-cupboard-one
