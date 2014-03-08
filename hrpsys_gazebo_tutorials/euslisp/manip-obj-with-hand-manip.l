@@ -188,6 +188,21 @@
     ))
 
 ;; util ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; get manip
+(defun get-manip-force
+  (&key (manip-num nil))
+
+  (mapcar
+   #'(lambda (i)
+       (let* ((manip (elt *manip-list* i))
+	      (manip-force1 (elt (elt *manip-list* i) 0))
+	      (manip-force2 (elt (elt *manip-list* i) (1- (length (elt *manip-list* i))))))
+	 (list manip-force1 manip-force2)
+	 ))
+   (cond (manip-num (list manip-num))
+	 (t (range (length *manip-list*))))
+   ))
+
 ;; get random force
 (defun get-random-force
   ()
