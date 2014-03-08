@@ -68,7 +68,7 @@
 	   (draw-interval 10))
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
-      ;; when obj-num is specified, set float-flag of unspecified objects as t
+      ;; when obj-num is specified, set update-state-flag of unspecified objects as t
       (when obj-num
 	(setq update-state-flag (make-list (length *objlist*) :initial-element nil))
 	(setf (elt update-state-flag obj-num) t))
@@ -79,7 +79,7 @@
 	(setq update-state-flag
 	      (mapcar #'(lambda (x y z) (and x (not (or y z)))) update-state-flag float-flag fall-down-flag))
 	(when no-save ;; only when no-save because manip needs to be saved
-	  (unless (reduce #'(lambda (x y) (or x y)) (list nil nil nil)) ;; when all flag is nil
+	  (unless (reduce #'(lambda (x y) (or x y)) update-state-flag) ;; when all flag is nil
 	    (warn "break from loop because update-state-flag is nil for all model~%")
 	    (return-from nil nil)))
 	;; update force
