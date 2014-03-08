@@ -20,6 +20,7 @@
 
 (load "package://hrpsys_gazebo_tutorials/euslisp/hand-command-publisher.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/drum_body.l")
+(load "package://hrpsys_gazebo_tutorials/euslisp/metal_small_cart.l")
 
 
 (defun usage-main
@@ -106,6 +107,13 @@
 	(send obj-tmp :newcoords (make-coords))
 	(send *lhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 -270 800)):rot (rpy-matrix pi -pi/2 0)))
 	(send *rhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 410 800)):rot (rpy-matrix pi -pi/2 0)))
+	)
+       ((equal model-name "metal_small_cart_wh")
+	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (make-metal-small-cart)))
+	(eval (list 'setq 'obj-tmp (read-from-string (format nil "*obj~d*" (+ i 1)))))
+	(send obj-tmp :newcoords (make-coords))
+	(send *lhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 -270 800)):rot (rpy-matrix pi -pi/2 0)))
+	(send *rhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 410 800)):rot (rpy-matrix pi -pi/2 0)))
 	))
       ;; assoc hand
       (send obj-tmp :assoc *lhand*)
@@ -134,6 +142,9 @@
 
 (defun init-drum ()
   (init :model-name "drum_wh"))
+
+(defun init-cart ()
+  (init :model-name "metal_small_cart_wh"))
 
 
 ;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
