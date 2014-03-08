@@ -229,6 +229,38 @@
     class-eval-list
     ))
 
+(defun get-manip-eval
+  (&key (manip-num nil))
+
+  (let* ((ret
+	  (mapcar #'(lambda (manip-eval-list) (/ (reduce #'+ manip-eval-list) (length manip-eval-list)))
+		  (mapcar
+		   #'(lambda (class-list-data)
+		       (mapcar #'(lambda (class-list-value) (elt *class-eval* class-list-value)) class-list-data)
+		       )
+		   *class-list*))))
+    (cond (manip-num (elt ret manip-num))
+	  (t ret))
+    ))
+
+(defun get-sort-manip-id
+  ()
+
+  (let* ((manip-eval-list (get-manip-eval))
+	 (manip-id-list (range (length manip-eval-list)))
+	 (manip-eval-id-list
+	  (mapcar #'(lambda (x y) (cons x y)) manip-eval-list manip-id-list))
+	 (manip-eval-id-list-sort
+	  (sort manip-eval-id-list #'(lambda (x y) (>= (car x) (car y)))))
+	 (manip-eval-list-sort
+	  (mapcar #'(lambda (x) (car x)) manip-eval-id-list-sort))
+	 (manip-id-list-sort
+	  (mapcar #'(lambda (x) (cdr x)) manip-eval-id-list-sort)))
+    (warn "manip-id  : ~a~%" manip-id-list-sort)
+    (warn "manip-eval: ~a~%" manip-eval-list-sort)
+    manip-id-list-sort
+    ))
+
 ;; update class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun update-class-list
   ()
