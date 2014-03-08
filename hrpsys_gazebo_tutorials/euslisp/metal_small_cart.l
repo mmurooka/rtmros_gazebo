@@ -120,7 +120,7 @@
        )
      ;; bar
      (let* ((bar-thikness 15)
-	    (bar-length 720)
+	    (bar-length 800)
 	    (bar-angle 5)
 	    (bar-length-top 600)
 	    (bar-thikness-top 12.5)
@@ -150,12 +150,12 @@
        (setq left-handle
 	     (make-cascoords :coords
 			     (send (send (send bar-top :copy-worldcoords)
-					 :translate (float-vector 0 0 (+ handle-offset))) :rotate -pi/2 :x)
+					 :translate (float-vector 0 0 (+ handle-offset))) :rotate 0 :x)
 			     :name :left-handle))
        (setq right-handle
 	     (make-cascoords :coords
 			     (send (send (send bar-top :copy-worldcoords)
-					 :translate (float-vector 0 0 (- bar-length-top handle-offset))) :rotate -pi/2 :x)
+					 :translate (float-vector 0 0 (- bar-length-top handle-offset))) :rotate -pi :x)
 			     :name :right-handle))
        ;; add handle
        (send bar-top :assoc left-handle)
