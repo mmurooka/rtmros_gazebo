@@ -60,23 +60,28 @@
 	   (2dcoord-tmp (make-list (length *objlist*)))
 	   (fall-down-flag (make-list (length *objlist*)))
 	   (float-flag (make-list (length *objlist*)))
+	   (update-state-flag (make-list (length *objlist*) :initial-element t))
 	   flist
 	   (f1 (float-vector 0 0 0)) (f2 (float-vector 0 0 0))
 	   (m1 (float-vector 0 0 0)) (m2 (float-vector 0 0 0))
 	   (update-force-flag nil)
-	   (update-state-flag nil)
 	   (draw-interval 10))
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
       ;; when obj-num is specified, set float-flag of unspecified objects as t
       (when obj-num
-	(setq fall-down-flag (make-list (length *objlist*) :initial-element t))
-	(setf (elt fall-down-flag obj-num) nil))
+	(setq update-state-flag (make-list (length *objlist*) :initial-element nil))
+	(setf (elt update-state-flag obj-num) t))
       (dotimes (i loop-num)
 	;; init timer
 	(sleep-gazebo-init *manip-dt*)
-	;; update update-flag
-	(setq update-state-flag (mapcar #'(lambda (x y) (not (or x y))) float-flag fall-down-flag))
+	;; update update-state-flag
+	(setq update-state-flag
+	      (mapcar #'(lambda (x y z) (and x (not (or y z)))) update-state-flag float-flag fall-down-flag))
+	(when no-save ;; only when no-save because manip needs to be saved
+	  (unless (reduce #'(lambda (x y) (or x y)) (list nil nil nil)) ;; when all flag is nil
+	    (warn "break from loop because update-state-flag is nil for all model~%")
+	    (return-from nil nil)))
 	;; update force
 	(setq update-force-flag nil)
 	(cond
@@ -113,7 +118,7 @@
 	  ;; store manip, contact and 2dcoord
 	  (push-back (list f1 f2) manip-tmp)
 	  (dotimes (i (length *objlist*))
-	    (unless (or (elt float-flag i) (elt fall-down-flag i))
+	    (when (elt update-state-flag i)
 	      (let* ((obj-tmp (elt *objlist* i)))
 		(push-back (send obj-tmp :get :contact) (elt contact-tmp i))
 		(push-back (list (send obj-tmp :get :2d-pos) (send obj-tmp :get :2d-angle)) (elt 2dcoord-tmp i)))))
