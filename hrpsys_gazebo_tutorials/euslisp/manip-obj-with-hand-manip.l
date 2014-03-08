@@ -40,13 +40,20 @@
       (send gp :set-pose (make-coords :rpy (list pi 0 0)))
       (send-all gplist-except :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
       (send-all gplist-except :set-pose (make-coords :pos (float-vector (* 1000 1000) 0 0) :rpy (list pi 0 0)))
-      (unix::usleep (* 100 1000))
       )
      (t
       (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
       (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
-      (unix::usleep (* 100 1000))))
-
+      ))
+    ;; update first
+    (sleep-gazebo 0.1)
+    (update-coord-cupboard)
+    (update-contact-cupboard)
+    (update-ar-coord (float-vector 1 0 0) (float-vector 1 0 0))
+    (send *pickview* :draw-objects :flush nil)
+    (draw-contact-cupboard)
+    (send *viewer* :flush)
+    ;; loop
     (let* (loop-num ;; loop num
 	   manip-tmp
 	   (contact-tmp (make-list (length *objlist*)))
@@ -57,10 +64,19 @@
 	   (f1 (float-vector 0 0 0)) (f2 (float-vector 0 0 0))
 	   (m1 (float-vector 0 0 0)) (m2 (float-vector 0 0 0))
 	   (update-force-flag nil)
+	   (update-state-flag nil)
 	   (draw-interval 10))
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
+      ;; when obj-num is specified, set float-flag of unspecified objects as t
+      (when obj-num
+	(setq fall-down-flag (make-list (length *objlist*) :initial-element t))
+	(setf (elt fall-down-flag obj-num) nil))
       (dotimes (i loop-num)
+	;; init timer
+	(sleep-gazebo-init *manip-dt*)
+	;; update update-flag
+	(setq update-state-flag (mapcar #'(lambda (x y) (not (or x y))) float-flag fall-down-flag))
 	;; update force
 	(setq update-force-flag nil)
 	(cond
@@ -81,22 +97,18 @@
 	;; add force
 	(when update-force-flag
 	  (dotimes (i (length *gplist*))
-	    (unless (or (elt float-flag i) (elt fall-down-flag i))
+	    (when (elt update-state-flag i)
 	      (send (elt *gplist* i) :add-force2 f1 f2 m1 m2))))
 	;; update coord and contact and view them
-	(let* ((update-flag (mapcar #'(lambda (x y) (not (or x y))) float-flag fall-down-flag)))
-	  (update-coord-cupboard :update-flag update-flag)
-	  (update-contact-cupboard :update-flag update-flag))
+	(update-coord-cupboard :update-flag update-state-flag)
+	(update-contact-cupboard :update-flag update-state-flag)
 	;; update view
 	(when (equal (mod i draw-interval) 0)
-	  (update-ar-coord f1 f2)
+	  (update-ar-coord f1 f2 :update-flag update-state-flag)
 	  (send *pickview* :draw-objects :flush nil)
-	  (draw-contact-cupboard)
+	  (cond (obj-num (draw-contact-cupboard :update-flag update-state-flag))
+		(t (draw-contact-cupboard)))
 	  (send *viewer* :flush))
-	;; ;; when obj-num is specified, set float-flag of unspecified objects as t
-	;; (when obj-num
-	;;   (setq fall-down-flag (make-list (length *objlist*) :initial-element t))
-	;;   (setf (elt fall-down-flag obj-num) nil))
 	(unless (equal i 0) ;; I don't know why, but the first coord is not updated.
 	  ;; store manip, contact and 2dcoord
 	  (push-back (list f1 f2) manip-tmp)
@@ -114,7 +126,9 @@
 		(mapcar #'(lambda (x y) (or x (check-fall-down y)))
 			fall-down-flag (send-all *objlist* :copy-worldcoords))))
 	(x::window-main-one)
-	(unix::usleep (round (* *manip-dt* 1000 1000)))
+	;; wait timer
+	(sleep-gazebo-wait)
+	;;(unix::usleep (round (* *manip-dt* 1000 1000)))
 	)
       (warn "~2d : float : ~a  fall  : ~a~%" *manip-cnt* float-flag fall-down-flag)
 
