@@ -51,22 +51,26 @@
     (init-variable)
     (return-from init nil))
 
+  ;; init timer
+  (setq *gazebo-timer* (init-gazebo-timer))
+
   ;; load controller parameter for hand
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_L.yaml HRP3HAND_L")
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_R.yaml HRP3HAND_R")
 
+  ;; make gazebo model and plugin interface
   (setq *gplist* nil)
   (dotimes (i model-num)
-    ;; add hand model to the gazebo world
+    ;; add model to the gazebo world
     (unix::system (format nil "gzfactory spawn -f `rospack find hrpsys_gazebo_tutorials`/environment_models/~a/model~d.urdf -m ~a -x 0 -y 0 -z 1" model-name (+ i 1) model-name))
 
     ;; make gazebo plugin interface
     (eval (list 'setq (read-from-string (format nil "*gp~d*" (+ i 1))) (init-gazebo-plugin (format nil "obj~d" (+ i 1)))))
     (eval (list 'push-back (read-from-string (format nil "*gp~d*" (+ i 1))) '*gplist*)))
 
-  ;; make controller interface
+  ;; make hand controller interface
   (setq *hc* (instance hand-command-publisher-class :init))
-  (unix::usleep (* 1000 1000))
+  (sleep-gazebo 1)
 
   ;; make and view euslisp model
   (setq *arlist* nil)
@@ -117,7 +121,7 @@
 
   ;; set hook-pose
   (set-hand-pose :hook-pose :arms)
-  (unix::usleep (* 1000 1000))
+  (sleep-gazebo 1)
 
   ;; init variables
   (init-variable)

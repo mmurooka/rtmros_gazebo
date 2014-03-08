@@ -12,7 +12,7 @@
 
 (defclass gazebo-timer
   :super propertied-object
-  :slots (init-time latest-time init-wait-time) ;; [sec]
+  :slots (init-time latest-time wait-finish-time wait-finish-time-without-block) ;; [sec]
   )
 
 (defmethod gazebo-timer
@@ -45,9 +45,19 @@
   (:wait
    (wait-time) ;; [sec]
    (send self :update)
-   (setq init-wait-time latest-time)
+   (setq wait-finish-time (+ latest-time wait-time))
    (while t
      (send self :update)
-     (when (> latest-time (+ init-wait-time wait-time))
+     (when (> latest-time wait-finish-time)
+       (return-from nil nil))))
+  (:wait-without-block-init
+   (wait-time) ;; [sec]
+   (send self :update)
+   (setq wait-finish-time-without-block (+ latest-time wait-time)))
+  (:wait-without-block-wait
+   ()
+   (while t
+     (send self :update)
+     (when (> latest-time wait-finish-time-without-block)
        (return-from nil nil))))
   )

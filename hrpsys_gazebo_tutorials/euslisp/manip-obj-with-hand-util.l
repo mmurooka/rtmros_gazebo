@@ -6,7 +6,8 @@
 (rbrain)
 
 
-(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils")
+(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils.l")
+(load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-timer.l")
 
 
 (defun usage-util
@@ -39,9 +40,9 @@
 
   ;; manip meta parameter
   (setq *manip-cnt* 0)
-  (setq *manip-dt* 0.002)
-  (setq *manip-loop-num* 500)
-  (setq *update-force-loop-num* 250)
+  (setq *manip-dt* 0.01)
+  (setq *manip-loop-num* 300)
+  (setq *update-force-loop-num* 150)
   (setq *offset-z-list* nil)
 
   ;; strategy
@@ -64,9 +65,9 @@
 
   ;; manip meta parameter
   (setq *manip-cnt* 0)
-  (setq *manip-dt* 0.002)
-  (setq *manip-loop-num* 500)
-  (setq *update-force-loop-num* 250)
+  (setq *manip-dt* 0.01)
+  (setq *manip-loop-num* 300)
+  (setq *update-force-loop-num* 150)
   (setq *offset-z-list* nil)
 
   ;; init contact
@@ -156,7 +157,7 @@
   (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
   (send-all *gplist* :set-pose (make-coords))
   ;; wait
-  (unix::usleep (* 1000 1000))
+  (sleep-gazebo 1)
   ;; update coord
   (update-coord-cupboard)
   (send *pickview* :draw-objects)
@@ -353,6 +354,23 @@
     (send c :add-handle (make-cascoords :pos (float-vector (- (/ d 2)) (- (/ w 2)) 0)
 					:rot (unit-matrix 3) :name :right-rear-edge))
     c))
+
+;; timer ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun sleep-gazebo
+  (wait-time) ;; [sec]
+  (send *gazebo-timer* :wait wait-time)
+  )
+
+(defun sleep-gazebo-init
+  (wait-time) ;; [sec]
+  (send *gazebo-timer* :wait-without-block-init wait-time)
+  )
+
+(defun sleep-gazebo-wait
+  ()
+  (send *gazebo-timer* :wait-without-block-wait)
+  )
+
 
 ;; mass ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun sqrt-with-sgn

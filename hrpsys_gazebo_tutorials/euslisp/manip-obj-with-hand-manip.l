@@ -40,12 +40,11 @@
       (send gp :set-pose (make-coords :rpy (list pi 0 0)))
       (send-all gplist-except :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
       (send-all gplist-except :set-pose (make-coords :pos (float-vector (* 1000 1000) 0 0) :rpy (list pi 0 0)))
-      (unix::usleep (* 100 1000))
       )
      (t
       (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
-      (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))
-      (unix::usleep (* 100 1000))))
+      (send-all *gplist* :set-pose (make-coords :rpy (list pi 0 0)))))
+    (sleep-gazebo 0.1)
 
     (let* (loop-num ;; loop num
 	   manip-tmp
@@ -61,6 +60,8 @@
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
       (dotimes (i loop-num)
+	;; init timer
+	(sleep-gazebo-init *manip-dt*)
 	;; update force
 	(setq update-force-flag nil)
 	(cond
@@ -114,7 +115,9 @@
 		(mapcar #'(lambda (x y) (or x (check-fall-down y)))
 			fall-down-flag (send-all *objlist* :copy-worldcoords))))
 	(x::window-main-one)
-	(unix::usleep (round (* *manip-dt* 1000 1000)))
+	;; wait timer
+	(sleep-gazebo-wait)
+	;;(unix::usleep (round (* *manip-dt* 1000 1000)))
 	)
       (warn "~2d : float : ~a  fall  : ~a~%" *manip-cnt* float-flag fall-down-flag)
 
