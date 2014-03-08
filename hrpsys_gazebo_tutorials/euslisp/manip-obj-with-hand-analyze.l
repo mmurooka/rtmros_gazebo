@@ -24,7 +24,7 @@
   (&key (class-num 3))
 
   ;; calc feature value
-  (calc-feature-value :output nil)
+  (calc-feature-value :no-print t)
   ;; classify
   (classify-feature-value :class-num class-num)
   (when (equal *all-class-data* :error)
@@ -120,7 +120,7 @@
     ))
 
 (defun calc-feature-value
-  (&key (output t) (contact-data *contact-list*) (2dcoord-data *2dcoord-list*) (no-save nil))
+  (&key (no-print nil) (contact-data *contact-list*) (2dcoord-data *2dcoord-list*) (no-save nil))
 
   (cond ((equal no-save nil)
 	 (setq *fv-list* (make-list (length contact-data)))
@@ -140,7 +140,7 @@
  	       (push-back (elt fv-eval-list 0) (elt *fv-list-test* 0))
 	       (push-back (elt fv-eval-list 1) (elt *eval-list-test* 0)))
 	      ))))
-  (when output
+  (unless no-print
     (cond ((equal no-save nil)
 	   (print-feature-value))
 	  ((equal no-save :test)

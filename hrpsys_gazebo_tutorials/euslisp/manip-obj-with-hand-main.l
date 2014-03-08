@@ -147,7 +147,7 @@
   (init :model-name "metal_small_cart_wh"))
 
 
-;; main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; general main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun main-try
   (&key (manip-loop-num nil) (no-plot nil))
 
@@ -165,7 +165,7 @@
   )
 
 (defun main-train
-  (&key (class-num 3) (no-play t) (no-analyze nil) (no-plot nil))
+  (&key (class-num 3) (no-play t) (no-analyze nil) (no-print nil) (no-plot nil))
 
   ;; init
   (init)
@@ -177,8 +177,9 @@
     (return-from main2 nil))
   (dotimes (i (length (elt *all-class-data* 1)))
     ;; print
-    (print-feature-value :class-num i)
-    (print-class-info :class-num i)
+    (unless no-print
+      (print-feature-value :class-num i)
+      (print-class-info :class-num i))
     ;; plot
     (unless no-plot 
       (plot-all-class-data :class-num i :save nil))
@@ -213,7 +214,7 @@
   (unless no-plot 
     (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*))
   ;; test
-  (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
+  (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test :no-print t)
   (let* ((nearest-class (get-nearest-class))
 	 (obj-num-res (get-nearest-obj nearest-class)))
     ;; print
@@ -252,3 +253,28 @@
   ;; plot
   (plot-all-class-data)
   )
+
+
+;; special main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun main-train-cupboard
+  ()
+
+  ;; generate
+  (generate-cupboard)
+  ;; init
+  (init :model-num 6)
+  ;; try
+  (main-try :manip-loop-num 15 :no-plot t))
+
+(defun main-test-cupboard
+  ()
+
+  ;; generate
+  (generate-cupboard :error-ratio 5)
+  ;; init
+  (init :model-num 6 :force t)
+  ;; train
+  (main-train :class-num 5 :no-plot t)
+  ;; test
+  (dotimes (i (length *objlist*))
+    (main-test :obj-num i :class-num 5 :no-plot t)))
