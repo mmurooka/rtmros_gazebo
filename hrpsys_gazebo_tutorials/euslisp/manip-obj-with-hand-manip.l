@@ -188,20 +188,6 @@
     ))
 
 ;; util ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; get manip
-(defun get-manip-force
-  (&key (manip-num nil))
-
-  (mapcar
-   #'(lambda (i)
-       (let* ((manip (elt *manip-list* i))
-	      (manip-force1 (elt (elt *manip-list* i) 0))
-	      (manip-force2 (elt (elt *manip-list* i) (1- (length (elt *manip-list* i))))))
-	 (list manip-force1 manip-force2)
-	 ))
-   (cond (manip-num (list manip-num))
-	 (t (range (length *manip-list*))))
-   ))
 
 ;; get random force
 (defun get-random-force
@@ -261,3 +247,38 @@
     ;; (warn "~a/~a" rp-angle rp-angle-thre)
     (> rp-angle rp-angle-thre)
     ))
+
+;; test ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; get manip
+(defun get-manip-force
+  (&key (manip-num nil) (convert-to-eus t))
+
+  (mapcar
+   #'(lambda (i)
+       (let* ((manip (elt *manip-list* i))
+	      (manip-force1 (elt (elt *manip-list* i) 0))
+	      (manip-force2 (elt (elt *manip-list* i) (1- (length (elt *manip-list* i))))))
+	 (cond (convert-to-eus
+		(list
+		 (mapcar #'convert-force-from-gazebo-to-eus manip-force1)
+		 (mapcar #'convert-force-from-gazebo-to-eus manip-force2)))
+	       (t
+		(list manip-force1 manip-force2)))
+	 ))
+   (cond (manip-num (list manip-num))
+	 (t (range (length *manip-list*))))
+   ))
+
+(defun get-sort-manip-force
+  ()
+
+  (mapcar #'(lambda (i) (car (get-manip-force :manip-num i)))
+	  (get-sort-manip-id)))
+
+(defun convert-force-from-gazebo-to-eus
+  (force)
+
+  (concatenate float-vector
+	       (mapcar #'(lambda (x) (if (eps= x 0.0) 0.0 x))
+		       (concatenate cons (v- (rotate-vector force pi/2 :y)))))
+  )

@@ -256,16 +256,10 @@
 	  (mapcar #'(lambda (x) (car x)) manip-eval-id-list-sort))
 	 (manip-id-list-sort
 	  (mapcar #'(lambda (x) (cdr x)) manip-eval-id-list-sort)))
-    (warn "manip-id  : ~a~%" manip-id-list-sort)
-    (warn "manip-eval: ~a~%" manip-eval-list-sort)
+    ;;(warn "manip-id  : ~a~%" manip-id-list-sort)
+    ;;(warn "manip-eval: ~a~%" manip-eval-list-sort)
     manip-id-list-sort
     ))
-
-(defun get-sort-manip-force
-  ()
-
-  (mapcar #'(lambda (i) (car (get-manip-force :manip-num i)))
-	  (get-sort-manip-id)))
 
 ;; update class ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun update-class-list

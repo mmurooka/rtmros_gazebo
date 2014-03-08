@@ -378,7 +378,6 @@
   (send *gazebo-timer* :wait-without-block-wait)
   )
 
-
 ;; mass ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun sqrt-with-sgn
   (x)
