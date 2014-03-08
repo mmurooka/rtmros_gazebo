@@ -137,14 +137,14 @@
   (setq *manip-obj-with-hand-init-flag* t)
   )
 
-(defun init-cupboard ()
-  (init :model-name "cupboard_wh"))
+(defun init-cupboard (&rest args)
+  (apply #'init :model-name "cupboard_wh" args))
 
-(defun init-drum ()
-  (init :model-name "drum_wh"))
+(defun init-drum (&rest args)
+  (apply #'init :model-name "drum_wh" args))
 
-(defun init-cart ()
-  (init :model-name "metal_small_cart_wh"))
+(defun init-cart (&rest args)
+  (apply #'init :model-name "metal_small_cart_wh" args))
 
 
 ;; general main function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
