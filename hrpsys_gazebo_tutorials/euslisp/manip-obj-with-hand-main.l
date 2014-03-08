@@ -154,7 +154,7 @@
   )
 
 (defun main-train
-  (&key (class-num 3) (no-play t) (no-analyze nil) (no-plot nil))
+  (&key (class-num 3) (no-play t) (no-analyze nil) (no-print nil) (no-plot nil))
 
   ;; init
   (init)
@@ -166,8 +166,9 @@
     (return-from main2 nil))
   (dotimes (i (length (elt *all-class-data* 1)))
     ;; print
-    (print-feature-value :class-num i)
-    (print-class-info :class-num i)
+    (unless no-print
+      (print-feature-value :class-num i)
+      (print-class-info :class-num i))
     ;; plot
     (unless no-plot 
       (plot-all-class-data :class-num i :save nil))
@@ -202,7 +203,7 @@
   (unless no-plot 
     (plot-all :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test*))
   ;; test
-  (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test)
+  (calc-feature-value :contact-data *contact-list-test* :2dcoord-data *2dcoord-list-test* :no-save :test :no-print t)
   (let* ((nearest-class (get-nearest-class))
 	 (obj-num-res (get-nearest-obj nearest-class)))
     ;; print
