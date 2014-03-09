@@ -1,6 +1,7 @@
 (defun make-metal-small-cart
   ()
-  (instance metal-small-cart :init))
+  (let* ((obj (instance metal-small-cart :init)))
+    obj))
 
 (defclass metal-small-cart
   :super cascaded-link
@@ -194,7 +195,6 @@
      (dolist (b (cdr base-link-list)) (send (car base-link-list) :assoc b))
      ;; translate
      (send (car base-link-list) :locate (float-vector 0 0 (+ (/ box-h 2) wheel-z wheel-r)))
-     (send (car base-link-list) :orient pi :z)
      ;; make bodyset-link ;;;;;;;;;;;;;;;;;
      (setq base-link (instance bodyset-link :init (make-cascoords)
 			       :bodies (append base-link-list nil)
