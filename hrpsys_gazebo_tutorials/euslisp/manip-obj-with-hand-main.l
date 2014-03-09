@@ -134,6 +134,9 @@
   ;; init variables
   (init-variable)
 
+  ;; init contact
+  (init-contact)
+
   (setq *manip-obj-with-hand-init-flag* t)
   )
 

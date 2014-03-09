@@ -46,9 +46,6 @@
   (setq *strategy-manip-list* nil)
   (gen-all-strategy)
 
-  ;; init contact
-  (init-contact)
-
   nil)
 
 (defun init-variable-test
@@ -63,9 +60,6 @@
   ;; manip meta parameter
   (init-manip-param)
 
-  ;; init contact
-  (init-contact)
-
   nil)
 
 (defun init-manip-param
@@ -79,6 +73,27 @@
   (setq *offset-z-list* nil)
 
   nil)
+
+;; init contact
+(defun init-contact
+  ()
+
+  (setq *offset-z-list* nil)
+  ;; set force and pose
+  (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
+  (send-all *gplist* :set-pose (make-coords))
+  ;; wait
+  (sleep-gazebo 1)
+  ;; update coord
+  (update-coord-cupboard)
+  (send *pickview* :draw-objects)
+  ;; calc contact thre
+  (setq *offset-z-list*
+	(mapcar #'- (update-contact-cupboard :return-contact-z t)))
+  ;; update coord again
+  (update-coord-cupboard)
+  (send *pickview* :draw-objects)
+  )
 
 ;; save/load ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun save-variable
@@ -101,7 +116,7 @@
 
   (length (elt *all-class-data* 1)))
 
-;; update ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; update coord ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; obj coord
 (defun update-coord-cupboard
   (&key (update-flag nil))
@@ -154,28 +169,7 @@
     (send right-ar :newcoords (send (send (send (send f2coord :copy-worldcoords) :rotate -pi/2 :z) :rotate 0 :x) :translate (float-vector 0 l2 0) :local))
     ))
 
-;; init contact
-(defun init-contact
-  ()
-
-  (setq *offset-z-list* nil)
-  ;; set force and pose
-  (send-all *gplist* :add-force2 (float-vector 0 0 0) (float-vector 0 0 0))
-  (send-all *gplist* :set-pose (make-coords))
-  ;; wait
-  (sleep-gazebo 1)
-  ;; update coord
-  (update-coord-cupboard)
-  (send *pickview* :draw-objects)
-  ;; calc contact thre
-  (setq *offset-z-list*
-	(mapcar #'- (update-contact-cupboard :return-contact-z t)))
-  ;; update coord again
-  (update-coord-cupboard)
-  (send *pickview* :draw-objects)
-  )
-
-;; contact
+;; update contact ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun update-contact-cupboard
   (&key (update-flag nil) (return-contact-z nil))
 
@@ -222,7 +216,6 @@
     ))
 
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; once
 (defun draw-contact-cupboard
   (&key (update-flag nil))
 
