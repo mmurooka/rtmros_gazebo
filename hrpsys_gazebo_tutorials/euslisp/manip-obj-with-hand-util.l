@@ -159,13 +159,21 @@
 (defun update-ar-coord
   (f1 f2 &key (update-flag nil))
 
-  (dotimes (i (length *objlist*))
-    (when (or (not update-flag) (elt update-flag i))
-      (eval (list 'update-ar-coord-one 'f1 'f2
-		  :lhand (read-from-string (format nil "*lhand~d*" (+ i 1)))
-		  :rhand (read-from-string (format nil "*rhand~d*" (+ i 1)))
-		  :left-ar (read-from-string (format nil "*left-ar~d*" (+ i 1)))
-		  :right-ar (read-from-string (format nil "*right-ar~d*" (+ i 1))))))))
+  (let* ((trnas-f1 f1) (trans-f2 f2))
+    (cond ((equal *model-name* "cupboard_wh")
+	   nil)
+	  ((equal *model-name* "drum_wh")
+	   nil)
+	  ((equal *model-name* "metal_small_cart_wh")
+	   (setq trans-f1 (rotate-vector f1 pi/2 :z))
+	   (setq trans-f2 (rotate-vector f2 -pi/2 :z))))
+    (dotimes (i (length *objlist*))
+      (when (or (not update-flag) (elt update-flag i))
+	(eval (list 'update-ar-coord-one 'trans-f1 'trans-f2
+		    :lhand (read-from-string (format nil "*lhand~d*" (+ i 1)))
+		    :rhand (read-from-string (format nil "*rhand~d*" (+ i 1)))
+		    :left-ar (read-from-string (format nil "*left-ar~d*" (+ i 1)))
+		    :right-ar (read-from-string (format nil "*right-ar~d*" (+ i 1)))))))))
 
 (defun update-ar-coord-one
   (f1 f2 &key (lhand *lhand*) (rhand *rhand*) (left-ar *left-ar*) (right-ar *right-ar*))
@@ -387,8 +395,17 @@
      (ros::publish (format nil "~a~a" objname "/AddForcePlugin/ForceCommand2") msg)))
   (:add-force2
    (_f1 _f2 &optional (_t1 (float-vector 0 0 0)) (_t2 (float-vector 0 0 0)))
-   (when _f1 (send self :add-force2-1 _f1 _t1))
-   (when _f2 (send self :add-force2-2 _f2 _t2)))
+
+   (let* ((trans-f1 _f1) (trans-f2 _f2))
+     (cond ((equal *model-name* "cupboard_wh")
+	    nil)
+	   ((equal *model-name* "drum_wh")
+	    nil)
+	   ((equal *model-name* "metal_small_cart_wh")
+	    (when _f1 (setq trans-f1 (rotate-vector _f1 pi/2 :z)))
+	    (when _f2 (setq trans-f2 (rotate-vector _f2 -pi/2 :z)))))
+     (when _f1 (send self :add-force2-1 trans-f1 _t1))
+     (when _f2 (send self :add-force2-2 trans-f2 _t2))))
   (:reset-force2
    ()
    (send self :add-force2 (float-vector 0 0 0) (float-vector 0 0 0)))
