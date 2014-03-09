@@ -38,7 +38,7 @@
 ;; calc feature value ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; calc
 (defun calc-feature-value-one
-  (&optional (contact (car *contact-list*)) (2dcoord (car *2dcoord-list*)))
+  (&optional (contact (car (car *contact-list*))) (2dcoord (car (car *2dcoord-list*))))
 
   (let* ((fv-yaw-vel (make-list 5 :initial-element 0)) ;; yaw velocity
 	 (fv-d-vel (make-list 5 :initial-element 0)) ;; 2d velocity
