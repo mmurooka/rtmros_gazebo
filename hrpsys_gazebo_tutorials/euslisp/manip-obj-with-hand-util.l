@@ -70,7 +70,6 @@
   (setq *manip-dt* 0.01)
   (setq *manip-loop-num* 300)
   (setq *update-force-loop-num* 150)
-  (setq *offset-z-list* nil)
 
   nil)
 

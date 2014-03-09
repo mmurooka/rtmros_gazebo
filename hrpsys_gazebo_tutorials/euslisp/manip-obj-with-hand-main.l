@@ -162,7 +162,7 @@
   ;; loop
   (do-until-key
    (manip)
-   (when (> *manip-cnt* manip-loop-num)
+   (when (and manip-loop-num (> *manip-cnt* manip-loop-num))
      (return-from nil nil)))
   ;; save
   (save-variable)
