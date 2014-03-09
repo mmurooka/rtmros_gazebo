@@ -47,11 +47,11 @@
       ))
     ;; update first
     (sleep-gazebo 0.1)
-    (update-coord-cupboard)
-    (update-contact-cupboard)
+    (update-obj-coord)
+    (update-obj-contact)
     (update-ar-coord (float-vector 1 0 0) (float-vector 1 0 0))
     (send *pickview* :draw-objects :flush nil)
-    (draw-contact-cupboard)
+    (draw-obj-contact)
     (send *viewer* :flush)
     ;; loop
     (let* (loop-num ;; loop num
@@ -105,14 +105,14 @@
 	    (when (elt update-state-flag i)
 	      (send (elt *gplist* i) :add-force2 f1 f2 m1 m2))))
 	;; update coord and contact and view them
-	(update-coord-cupboard :update-flag update-state-flag)
-	(update-contact-cupboard :update-flag update-state-flag)
+	(update-obj-coord :update-flag update-state-flag)
+	(update-obj-contact :update-flag update-state-flag)
 	;; update view
 	(when (equal (mod i draw-interval) 0)
 	  (update-ar-coord f1 f2 :update-flag update-state-flag)
 	  (send *pickview* :draw-objects :flush nil)
-	  (cond (obj-num (draw-contact-cupboard :update-flag update-state-flag))
-		(t (draw-contact-cupboard)))
+	  (cond (obj-num (draw-obj-contact :update-flag update-state-flag))
+		(t (draw-obj-contact)))
 	  (send *viewer* :flush))
 	(unless (equal i 0) ;; I don't know why, but the first coord is not updated.
 	  ;; store manip, contact and 2dcoord

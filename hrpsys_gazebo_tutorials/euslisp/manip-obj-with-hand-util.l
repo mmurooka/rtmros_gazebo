@@ -85,13 +85,13 @@
   ;; wait
   (sleep-gazebo 1)
   ;; update coord
-  (update-coord-cupboard)
+  (update-obj-coord)
   (send *pickview* :draw-objects)
   ;; calc contact thre
   (setq *offset-z-list*
-	(mapcar #'- (update-contact-cupboard :return-contact-z t)))
+	(mapcar #'- (update-obj-contact :return-contact-z t)))
   ;; update coord again
-  (update-coord-cupboard)
+  (update-obj-coord)
   (send *pickview* :draw-objects)
   )
 
@@ -118,16 +118,23 @@
 
 ;; update coord ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; obj coord
-(defun update-coord-cupboard
+(defun update-obj-coord
   (&key (update-flag nil))
 
   (dotimes (i (length *objlist*))
     (when (or (not update-flag) (elt update-flag i))
-      (update-coord-cupboard-one
-       :obj (elt *objlist* i) :gp (elt *gplist* i)
-       :offset-z (cond (*offset-z-list* (elt *offset-z-list* i))
-		       (t 0)))))
-  )
+      (let* ((update-coord-args
+	      (list :obj (elt *objlist* i) :gp (elt *gplist* i)
+		    :offset-z (cond (*offset-z-list* (elt *offset-z-list* i))
+				    (t 0)))))
+	(cond ((equal *model-name* "cupboard_wh")
+	       (apply #'update-coord-cupboard-one update-coord-args))
+	      ((equal *model-name* "drum_wh")
+	       ;;(apply #'update-coord-drum-one update-coord-args)
+	       nil)
+	      ((equal *model-name* "metal_small_cart_wh")
+	       (apply #'update-coord-cart-one update-coord-args)))
+	))))
 
 (defun update-coord-cupboard-one
   (&key (obj (car *objlist*)) (gp (car *gplist*)) (offset-z 0))
@@ -137,7 +144,16 @@
 	 (trans-gzb-pose (send gzb-pose :translate (float-vector 0 0 offset-z) :local))
 	 (gzb-pos (send trans-gzb-pose :worldpos)))
     (send obj :newcoords trans-gzb-pose)
-    ;; (send obj :newcoords (make-coords :pos (float-vector 0 0 (elt gzb-pos 2)) :rot (send gzb-pose :rot))) ;; ignore x,y motion
+    ))
+
+(defun update-coord-cart-one
+  (&key (obj (car *objlist*)) (gp (car *gplist*)) (offset-z 0))
+
+  ;; set gazebo model pose to eus model
+  (let* ((gzb-pose (send (send gp :get-pose) :copy-worldcoords))
+	 (trans-gzb-pose (send gzb-pose :translate (float-vector 0 0 offset-z) :local))
+	 (gzb-pos (send trans-gzb-pose :worldpos)))
+    (send obj :newcoords trans-gzb-pose)
     ))
 
 ;; ar coord
@@ -170,19 +186,26 @@
     ))
 
 ;; update contact ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun update-contact-cupboard
+(defun update-obj-contact
   (&key (update-flag nil) (return-contact-z nil))
 
   (let* (ret-tmp (ret nil))
     (dotimes (i (length *objlist*))
       (when (or (not update-flag) (elt update-flag i))
-	(setq ret-tmp
-	      (update-contact-cupboard-one
-	       :obj (elt *objlist* i) :return-contact-z return-contact-z)))
-      (when return-contact-z
-	(push-back (/ (reduce #'+ ret-tmp) (length ret-tmp)) ret))
-      )
+	(let* ((update-contact-args
+		(list :obj (elt *objlist* i) :return-contact-z return-contact-z)))
+	  (cond ((equal *model-name* "cupboard_wh")
+		 (setq ret-tmp (apply #'update-contact-cupboard-one update-contact-args)))
+		((equal *model-name* "drum_wh")
+		 ;;(setq ret-tmp (apply #'update-contact-drum-one update-contact-args))
+		 nil)
+		((equal *model-name* "metal_small_cart_wh")
+		 (setq ret-tmp (apply #'update-contact-cart-one update-contact-args)))))
+	(when return-contact-z
+	  (push-back (/ (reduce #'+ ret-tmp) (length ret-tmp)) ret))
+	))
     ret))
+
 
 (defun update-contact-cupboard-one
   (&key (obj *obj1*) (return-contact-z nil))
@@ -215,21 +238,62 @@
 	  (t nil))
     ))
 
+(defun update-contact-cart-one
+  (&key (obj *obj1*) (return-contact-z nil))
+
+  (let* ((bottom-vertices-handle
+	  (list :front-left-vertex :front-right-vertex :rear-right-vertex :rear-left-vertex))
+	 (bottom-vertices
+	  (mapcar #'(lambda (h) (send (send obj h) :worldpos)) bottom-vertices-handle))
+	 (bottom-vertices-z (mapcar #'(lambda (v) (elt v 2)) bottom-vertices))
+	 bottom-vcont bottom-lcont
+	 (contact-z-thre 1)
+	 ;;(contact-z-thre -0.5)
+	 )
+    (dotimes (i (length bottom-vertices-z))
+      (push-back (< (elt bottom-vertices-z i) contact-z-thre) bottom-vcont)
+      )
+    (dotimes (i (length bottom-vertices-z))
+      (push-back (and (elt bottom-vcont i) (elt bottom-vcont (mod (+ i 1) 4))) bottom-lcont)
+      )
+    ;;(print bottom-vertices-z)
+    (send obj :put :vcont bottom-vcont)
+    (send obj :put :lcont bottom-lcont)
+    (send obj :put :fcont (not (position nil bottom-vcont)))
+    (send obj :put :2d-pos (scale 0.001 (scale (/ 1.0 (length bottom-vertices)) (reduce #'v+ bottom-vertices))))
+    (send obj :put :2d-angle (elt (car (send (send (send obj :copy-worldcoords) :rotate pi :z) :rpy-angle)) 0))
+    (cond ((send obj :get :fcont) (send obj :put :contact :face))
+	  ((position t (send obj :get :lcont)) (send obj :put :contact :line))
+	  ((position t (send obj :get :vcont)) (send obj :put :contact :vertex))
+	  (t (send obj :put :contact :nil)))
+    (cond (return-contact-z bottom-vertices-z)
+	  (t nil))
+    ))
+
 ;; draw function ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun draw-contact-cupboard
+(defun draw-obj-contact
   (&key (update-flag nil))
 
   (dotimes (i (length *objlist*))
     (when (or (not update-flag) (elt update-flag i))
       (let* ((obj (elt *objlist* i))
-	     (pos (float-vector 10 (+ 20 (* i 15))))
+	     (string-pos (float-vector 10 (+ 20 (* i 15))))
 	     (output-string
-	      (format nil "~a : ~a" i (string (send obj :get :contact)))))
-	(draw-contact-cupboard-one :obj obj :pos pos :output-string output-string)))
+	      (format nil "~a : ~a" i (string (send obj :get :contact))))
+	     (draw-contact-args
+	      (list :obj obj :string-pos string-pos :output-string output-string)))
+	(cond ((equal *model-name* "cupboard_wh")
+	       (apply #'draw-contact-cupboard-one draw-contact-args))
+	      ((equal *model-name* "drum_wh")
+	       ;;(apply #'draw-contact-drum-one draw-contact-args)
+	       nil)
+	      ((equal *model-name* "metal_small_cart_wh")
+	       (apply #'draw-contact-cart-one draw-contact-args)))
+	))
     ))
 
 (defun draw-contact-cupboard-one
-  (&key (obj *obj1*) (pos (float-vector 10 20)) (output-string (string (send obj :get :contact))))
+  (&key (obj *obj1*) (string-pos (float-vector 10 20)) (output-string (string (send obj :get :contact))))
 
   (let* ((bottom-face (send obj :faces))
 	 (bottom-edges (send (elt bottom-face 7) :edges))
@@ -241,7 +305,28 @@
 	(send (elt bottom-edges i) :draw-on :color #f(1 0 0) :width 5))
       ))
   (send *pickview* :viewer :viewsurface
-	:string (elt pos 0) (elt pos 1) output-string)
+	:string (elt string-pos 0) (elt string-pos 1) output-string)
+  )
+
+(defun draw-contact-cart-one
+  (&key (obj *obj1*) (string-pos (float-vector 10 20)) (output-string (string (send obj :get :contact))))
+
+  (let* ((bottom-vertices-handle
+	  (list :front-left-vertex :front-right-vertex :rear-right-vertex :rear-left-vertex))
+	 (bottom-vertices
+	  (mapcar #'(lambda (h) (send (send obj h) :worldpos)) bottom-vertices-handle))
+	 (bottom-edges
+	  (mapcar
+	   #'(lambda (i) (make-line (elt bottom-vertices i) (elt bottom-vertices (mod (+ i 1) 4))))
+	   (range (length bottom-vertices)))))
+    (dotimes (i (length bottom-vertices))
+      (when (elt (send obj :get :vcont) i)
+	(send (elt bottom-vertices i) :draw-on :color #f(1 0 0) :width 5))
+      (when (elt (send obj :get :lcont) i)
+	(send (elt bottom-edges i) :draw-on :color #f(1 0 0) :width 5))
+      ))
+  (send *pickview* :viewer :viewsurface
+	:string (elt string-pos 0) (elt string-pos 1) output-string)
   )
 
 ;; loop

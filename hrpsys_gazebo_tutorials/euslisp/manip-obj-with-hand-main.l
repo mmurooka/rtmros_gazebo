@@ -55,6 +55,9 @@
   ;; init timer
   (setq *gazebo-timer* (init-gazebo-timer))
 
+  ;; init model name
+  (setq *model-name* model-name)
+
   ;; load controller parameter for hand
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_L.yaml HRP3HAND_L")
   (unix::system "rosparam load `rospack find hrpsys_gazebo_tutorials`/config/HRP3HAND_R.yaml HRP3HAND_R")
@@ -63,7 +66,7 @@
   (setq *gplist* nil)
   (dotimes (i model-num)
     ;; add model to the gazebo world
-    (unix::system (format nil "gzfactory spawn -f `rospack find hrpsys_gazebo_tutorials`/environment_models/~a/model~d.urdf -m ~a -x 0 -y 0 -z 1" model-name (+ i 1) model-name))
+    (unix::system (format nil "gzfactory spawn -f `rospack find hrpsys_gazebo_tutorials`/environment_models/~a/model~d.urdf -m ~a -x 0 -y 0 -z 1" *model-name* (+ i 1) *model-name*))
 
     ;; make gazebo plugin interface
     (eval (list 'setq (read-from-string (format nil "*gp~d*" (+ i 1))) (init-gazebo-plugin (format nil "obj~d" (+ i 1)))))
@@ -95,20 +98,20 @@
     ;; make obj
     (let* (obj-tmp)
       (cond 
-       ((equal model-name "cupboard_wh")
+       ((equal *model-name* "cupboard_wh")
 	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (make-73b2-cupboard-without-all-door)))
 	(eval (list 'setq 'obj-tmp (read-from-string (format nil "*obj~d*" (+ i 1)))))
 	(send *lhand* :newcoords (send obj-tmp :handle :name :left-front-handle1))
 	(send *rhand* :newcoords (send obj-tmp :handle :name :right-front-handle1))
 	)
-       ((equal model-name "drum_wh")
+       ((equal *model-name* "drum_wh")
 	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (instance drum_body_gkmodel0_nil_link_geom0 :init)))
 	(eval (list 'setq 'obj-tmp (read-from-string (format nil "*obj~d*" (+ i 1)))))
 	(send obj-tmp :newcoords (make-coords))
 	(send *lhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 -270 800)):rot (rpy-matrix pi -pi/2 0)))
 	(send *rhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 410 800)):rot (rpy-matrix pi -pi/2 0)))
 	)
-       ((equal model-name "metal_small_cart_wh")
+       ((equal *model-name* "metal_small_cart_wh")
 	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (make-metal-small-cart)))
 	(eval (list 'setq 'obj-tmp (read-from-string (format nil "*obj~d*" (+ i 1)))))
 	(send obj-tmp :newcoords (make-coords))
