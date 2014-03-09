@@ -198,9 +198,13 @@
 (defun get-random-force
   ()
 
-  (let* ((fx-list (list -10 -5 -1 0 1 5 10 15 20 25))
+  (let* (
+	 (fx-list (list -10 -5 -1 0 1 5 10))
+	 ;;(fx-list (list -10 -5 -1 0 1 5 10 15 20 25))
 	 (fy-list (list 0))
-	 (fz-list (list -3 -2 -1 0 1 2 3)))
+	 (fz-list (list -8 -6 -4 2 -1 0 1 2 4 6 8))
+	 ;;(fz-list (list -3 -2 -1 0 1 2 3))
+	 )
     (list
      (float-vector (elt fx-list (random (length fx-list)))
 		   (elt fy-list (random (length fy-list)))
