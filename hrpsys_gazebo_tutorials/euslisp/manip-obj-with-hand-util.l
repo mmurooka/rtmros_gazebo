@@ -257,8 +257,8 @@
 	  (mapcar #'(lambda (h) (send (send obj h) :worldpos)) bottom-vertices-handle))
 	 (bottom-vertices-z (mapcar #'(lambda (v) (elt v 2)) bottom-vertices))
 	 bottom-vcont bottom-lcont
-	 (contact-z-thre 50)
-	 ;;(contact-z-thre 1)
+	 (contact-z-thre 50) ;; for simulation
+	 ;;(contact-z-thre 20) ;; for real
 	 ;;(contact-z-thre -0.5)
 	 )
     (dotimes (i (length bottom-vertices-z))
@@ -320,7 +320,7 @@
   )
 
 (defun draw-contact-cart-one
-  (&key (obj *obj1*) (string-pos (float-vector 10 20)) (output-string (string (send obj :get :contact))))
+  (&key (obj *obj1*) (string-pos (float-vector 10 20)) (output-string (string (send obj :get :contact))) (flush nil))
 
   (let* ((bottom-vertices-handle
 	  (list :front-left-vertex :front-right-vertex :rear-right-vertex :rear-left-vertex))
@@ -338,6 +338,7 @@
       ))
   (send *pickview* :viewer :viewsurface
 	:string (elt string-pos 0) (elt string-pos 1) output-string)
+  (when flush (send *viewer* :flush))
   )
 
 ;; loop
