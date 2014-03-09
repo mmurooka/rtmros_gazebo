@@ -1,13 +1,13 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="metal_small_cart_wh" >
   <xacro:include filename="$(find hrpsys_gazebo_tutorials)/environment_models/metal_small_cart_wh/metal_small_cart_body.urdf" />
   <xacro:include filename="$(find hrpsys_gazebo_tutorials)/robot_models/HRP3HAND_L/HRP3HAND_L_mass0.urdf" >
-    <origin xyz="-0.3500 0.250 0.6000" rpy="1.5708 0 -1.5708"/>
+    <origin xyz="-0.3500 0.250 0.8850" rpy="1.5708 0 -1.5708"/>
   </xacro:include>
   <xacro:include filename="$(find hrpsys_gazebo_tutorials)/robot_models/HRP3HAND_R/HRP3HAND_R_mass0.urdf" >
-    <origin xyz="-0.3500 -0.250 0.6000" rpy="-1.5708 0 1.5708"/>
+    <origin xyz="-0.3500 -0.250 0.8850" rpy="-1.5708 0 1.5708"/>
   </xacro:include>
   <joint name="LHAND_DUMMY" type="revolute">
-    <origin xyz="-0.3500 0.250 0.6000" rpy="1.5708 0 -1.5708"/>
+    <origin xyz="-0.3500 0.250 0.8850" rpy="1.5708 0 -1.5708"/>
     <parent link="nil_link"/>
     <child link="LARM_LINK6"/>
     <axis xyz="-1 0 0"/>
@@ -15,7 +15,7 @@
     <dynamics damping="0.2" friction="0"/>
   </joint>
   <joint name="RHAND_DUMMY" type="revolute">
-    <origin xyz="-0.3500 -0.25 0.6000" rpy="-1.5708 0 1.5708"/>
+    <origin xyz="-0.3500 -0.25 0.8850" rpy="-1.5708 0 1.5708"/>
     <parent link="nil_link"/>
     <child link="RARM_LINK6"/>
     <axis xyz="-1 0 0"/>
