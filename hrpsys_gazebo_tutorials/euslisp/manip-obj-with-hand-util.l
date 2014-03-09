@@ -69,8 +69,10 @@
   ;; manip meta parameter
   (setq *manip-cnt* 0)
   (setq *manip-dt* 0.01)
-  (setq *manip-loop-num* 300)
-  (setq *update-force-loop-num* 150)
+  (setq *manip-loop-num* 200)
+  (setq *update-force-loop-num* 200)
+  ;;(setq *manip-loop-num* 300)
+  ;;(setq *update-force-loop-num* 150)
 
   nil)
 
@@ -255,7 +257,8 @@
 	  (mapcar #'(lambda (h) (send (send obj h) :worldpos)) bottom-vertices-handle))
 	 (bottom-vertices-z (mapcar #'(lambda (v) (elt v 2)) bottom-vertices))
 	 bottom-vcont bottom-lcont
-	 (contact-z-thre 1)
+	 (contact-z-thre 50)
+	 ;;(contact-z-thre 1)
 	 ;;(contact-z-thre -0.5)
 	 )
     (dotimes (i (length bottom-vertices-z))

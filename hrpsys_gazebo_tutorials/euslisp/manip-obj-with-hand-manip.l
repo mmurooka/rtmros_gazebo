@@ -199,19 +199,19 @@
   ()
 
   (let* (
-	 (fx-list (list -10 -5 -1 0 1 5 10))
+	 (fx-list (list -10 -5 -1 0 1 5 10 15 20 35 50))
 	 ;;(fx-list (list -10 -5 -1 0 1 5 10 15 20 25))
 	 (fy-list (list 0))
 	 (fz-list (list -8 -6 -4 2 -1 0 1 2 4 6 8))
 	 ;;(fz-list (list -3 -2 -1 0 1 2 3))
-	 )
-    (list
-     (float-vector (elt fx-list (random (length fx-list)))
-		   (elt fy-list (random (length fy-list)))
-		   (elt fz-list (random (length fz-list))))
-     (float-vector (elt fx-list (random (length fx-list)))
-		   (elt fy-list (random (length fy-list)))
-		   (elt fz-list (random (length fz-list)))))
+	 (f1 (float-vector (elt fx-list (random (length fx-list)))
+			   (elt fy-list (random (length fy-list)))
+			   (elt fz-list (random (length fz-list)))))
+	 (f2 (float-vector (elt fx-list (random (length fx-list)))
+			   (elt fy-list (random (length fy-list)))
+			   (elt fz-list (random (length fz-list))))))
+    ;;(list f1 f2)
+    (list f1 f1)
     ))
 
 (defun get-random-force-old
@@ -249,9 +249,7 @@
 (defun check-fall-down ;; return t when falling down
   (&optional (c (send *obj1* :copy-worldcoords)))
 
-  (let* (
-	 ;;(rp-angle-thre (/ pi 10))
-	 (rp-angle-thre (/ pi 5))
+  (let* ((rp-angle-thre (/ pi 5))
 	 (base-vec (float-vector 0 0 1))
 	 (trans-base-vec (send c :rotate-vector base-vec))
 	 (rp-angle (abs (acos (v. base-vec trans-base-vec)))))
@@ -293,3 +291,10 @@
 	       (mapcar #'(lambda (x) (if (eps= x 0.0) 0.0 x))
 		       (concatenate cons (v- (rotate-vector force pi/2 :y)))))
   )
+
+(defun add-force (force &key (loop-num 100))
+
+  (let* ((manip-tmp
+	  (make-list loop-num :initial-element (list force force))))
+    (manip :manip-input manip-tmp)
+    ))

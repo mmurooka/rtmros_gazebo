@@ -71,7 +71,8 @@
 	       (yaw-vel-thre 0.01)
 	       (yaw-vel-new (if (> yaw-vel yaw-vel-thre) yaw-vel 0))
 	       (yaw-unit-vel (float-vector (cos yaw-crnt) (sin yaw-crnt)))
-	       (cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel)))
+	       (cor-xy-yaw (v. xy-unit-vel yaw-unit-vel))
+	       ;;(cor-xy-yaw (abs (v. xy-unit-vel yaw-unit-vel)))
 	       (float-max 500)
 	       (fall-down-max 500)
 	       )
@@ -196,10 +197,10 @@
 (defun calc-manip-eval
   (contact 2dcoord)
 
-  (let* ((fall-down-penalty -200)
+  (let* ((fall-down-penalty -1000)
 	 (float-reward 100)
 	 (eval-max 100)
-	 (eval-min -100))
+	 (eval-min *-inf*))
     (let* ((dist (norm (subseq (car 2dcoord) 0 2)))
 	   (dist-score 0)
 	   (fall-down-score 0)
