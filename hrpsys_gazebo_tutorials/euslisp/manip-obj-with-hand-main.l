@@ -20,7 +20,6 @@
 
 (load "package://hrpsys_gazebo_tutorials/euslisp/hand-command-publisher.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/drum_body.l")
-(load "package://hrpsys_gazebo_tutorials/euslisp/metal_small_cart.l")
 
 
 (defun usage-main

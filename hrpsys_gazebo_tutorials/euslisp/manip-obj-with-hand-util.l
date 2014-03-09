@@ -8,6 +8,7 @@
 
 (load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-plugin-utils.l")
 (load "package://hrpsys_gazebo_tutorials/euslisp/gazebo-timer.l")
+(load "package://hrpsys_gazebo_tutorials/euslisp/metal_small_cart.l")
 
 
 (defun usage-util
@@ -69,7 +70,7 @@
   (setq *manip-cnt* 0)
   (setq *manip-dt* 0.01)
   (setq *manip-loop-num* 300)
-  (setq *update-force-loop-num* 150)
+  (setq *updtae-force-loop-num* 150)
 
   nil)
 
@@ -455,6 +456,17 @@
     (send c :add-handle (make-cascoords :pos (float-vector (- (/ d 2)) (- (/ w 2)) 0)
 					:rot (unit-matrix 3) :name :right-rear-edge))
     c))
+
+(defun make-metal-small-cart
+  ()
+  (let* ((obj (instance metal-small-cart :init))
+	 (handle-list
+	  (list :get-left-handle :get-right-handle :get-front-left-vertex :get-front-right-vertex :get-rear-left-vertex :get-rear-right-vertex)))
+    (dolist (h handle-list)
+      (send obj :put h (send obj h))
+      (send obj :assoc (send obj :get h)))
+    obj))
+
 
 ;; timer ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun sleep-gazebo

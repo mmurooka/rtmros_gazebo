@@ -1,8 +1,3 @@
-(defun make-metal-small-cart
-  ()
-  (let* ((obj (instance metal-small-cart :init)))
-    obj))
-
 (defclass metal-small-cart
   :super cascaded-link
   :slots ()
@@ -208,10 +203,18 @@
      (dolist (l (list bar-top))
        (send l :set-color :brown))
      base-link))
-  ;;(:left-handle () (find-if #'(lambda (h) (eq (send h :name) :left-handle)) handle))
-  ;;(:right-handle () (find-if #'(lambda (h) (eq (send h :name) :right-handle)) handle))
-  ;;(:front-left-vertex () (find-if #'(lambda (h) (eq (send h :name) :front-left-vertex)) handle))
-  ;;(:front-right-vertex () (find-if #'(lambda (h) (eq (send h :name) :front-right-vertex)) handle))
-  ;;(:rear-left-vertex () (find-if #'(lambda (h) (eq (send h :name) :rear-left-vertex)) handle))
-  ;;(:rear-right-vertex () (find-if #'(lambda (h) (eq (send h :name) :rear-right-vertex)) handle))
+  ;; handle
+  (:get-left-handle () (find-if #'(lambda (h) (eq (send h :name) :left-handle)) handle))
+  (:get-right-handle () (find-if #'(lambda (h) (eq (send h :name) :right-handle)) handle))
+  (:get-front-left-vertex () (find-if #'(lambda (h) (eq (send h :name) :front-left-vertex)) handle))
+  (:get-front-right-vertex () (find-if #'(lambda (h) (eq (send h :name) :front-right-vertex)) handle))
+  (:get-rear-left-vertex () (find-if #'(lambda (h) (eq (send h :name) :rear-left-vertex)) handle))
+  (:get-rear-right-vertex () (find-if #'(lambda (h) (eq (send h :name) :rear-right-vertex)) handle))
+  ;; handle
+  (:left-handle () (send self :get :get-left-handle))
+  (:right-handle () (send self :get :get-right-handle))
+  (:front-left-vertex () (send self :get :get-front-left-vertex))
+  (:front-right-vertex () (send self :get :get-front-right-vertex))
+  (:rear-left-vertex () (send self :get :get-rear-left-vertex))
+  (:rear-right-vertex () (send self :get :get-rear-right-vertex))
   )
