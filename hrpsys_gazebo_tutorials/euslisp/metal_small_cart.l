@@ -34,6 +34,7 @@
    ()
    (let* (base-link base-link-list
 		    left-handle right-handle
+		    front-left-vertex front-right-vertex rear-left-vertex rear-right-vertex
 		    cage
 		    wh1 wh2 wh3 wh4 wh1in wh2in wh3in wh4in
 		    bar-left bar-right bar-top
@@ -117,6 +118,32 @@
        (push-back wh2in base-link-list)
        (push-back wh3in base-link-list)
        (push-back wh4in base-link-list)
+       ;; set handle
+       (setq front-left-vertex
+	     (make-cascoords :coords
+			     (make-coords :pos (float-vector (- (/ box-l 2) wheel-r) (+ (/ box-w 2)) (- (+ (/ box-h 2) wheel-z wheel-r))))
+			     :name :front-left-vertex))
+       (setq front-right-vertex
+	     (make-cascoords :coords
+			     (make-coords :pos (float-vector (- (/ box-l 2) wheel-r) (- (/ box-w 2)) (- (+ (/ box-h 2) wheel-z wheel-r))))
+			     :name :front-right-vertex))
+       (setq rear-left-vertex
+	     (make-cascoords :coords
+			     (make-coords :pos (float-vector (+ (- (/ box-l 2)) (/ wheel-r 2)) (+ (/ box-w 2)) (- (+ (/ box-h 2) wheel-z wheel-r))))
+			     :name :rear-left-vertex))
+       (setq rear-right-vertex
+	     (make-cascoords :coords
+			     (make-coords :pos (float-vector (+ (- (/ box-l 2)) (/ wheel-r 2)) (- (/ box-w 2)) (- (+ (/ box-h 2) wheel-z wheel-r))))
+			     :name :rear-right-vertex))
+       ;; add handle
+       (send wh1 :assoc front-left-vertex)
+       (push-back front-left-vertex handle)
+       (send wh2 :assoc front-right-vertex)
+       (push-back front-right-vertex handle)
+       (send wh3 :assoc rear-left-vertex)
+       (push-back rear-left-vertex handle)
+       (send wh4 :assoc rear-right-vertex)
+       (push-back rear-right-vertex handle)
        )
      ;; bar
      (let* ((bar-thikness 15)
@@ -183,4 +210,8 @@
      base-link))
   (:left-handle () (find-if #'(lambda (h) (eq (send h :name) :left-handle)) handle))
   (:right-handle () (find-if #'(lambda (h) (eq (send h :name) :right-handle)) handle))
+  (:front-left-vertex () (find-if #'(lambda (h) (eq (send h :name) :front-left-vertex)) handle))
+  (:front-right-vertex () (find-if #'(lambda (h) (eq (send h :name) :front-right-vertex)) handle))
+  (:rear-left-vertex () (find-if #'(lambda (h) (eq (send h :name) :rear-left-vertex)) handle))
+  (:rear-right-vertex () (find-if #'(lambda (h) (eq (send h :name) :rear-right-vertex)) handle))
   )
