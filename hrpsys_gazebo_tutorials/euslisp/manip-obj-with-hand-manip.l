@@ -249,7 +249,9 @@
 (defun check-fall-down ;; return t when falling down
   (&optional (c (send *obj1* :copy-worldcoords)))
 
-  (let* ((rp-angle-thre (/ pi 10))
+  (let* (
+	 ;;(rp-angle-thre (/ pi 10))
+	 (rp-angle-thre (/ pi 5))
 	 (base-vec (float-vector 0 0 1))
 	 (trans-base-vec (send c :rotate-vector base-vec))
 	 (rp-angle (abs (acos (v. base-vec trans-base-vec)))))
