@@ -283,3 +283,26 @@
   ;; test
   (dotimes (i (length *objlist*))
     (main-test :obj-num i :class-num 5 :no-plot t)))
+
+(defun main-train-cart
+  ()
+
+  ;; generate
+  (generate-cart)
+  ;; init
+  (init-cart :model-num 6)
+  ;; try
+  (main-try :manip-loop-num 15 :no-plot t))
+
+(defun main-test-cart
+  ()
+
+  ;; generate
+  (generate-cart :error-ratio 5)
+  ;; init
+  (init-cart :model-num 6 :force t)
+  ;; train
+  (main-train :class-num 5 :no-plot t)
+  ;; test
+  (dotimes (i (length *objlist*))
+    (main-test :obj-num i :class-num 5 :no-plot t)))
