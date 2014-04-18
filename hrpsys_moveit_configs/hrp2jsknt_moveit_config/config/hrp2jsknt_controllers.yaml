@@ -43,3 +43,4 @@ controller_list:
       - CHEST_JOINT1
       - HEAD_JOINT0
       - HEAD_JOINT1
+      - virtual_joint
