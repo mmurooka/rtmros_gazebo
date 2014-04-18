@@ -57,7 +57,7 @@
         <joint name="CHEST_JOINT1" />
         <joint name="rarm_eef_1" />
     </group>
-    <group name="full_body">
+    <group name="whole_body">
         <joint name="virtual_joint" />
         <joint name="CHEST_JOINT0" />
         <joint name="CHEST_JOINT1" />
@@ -70,12 +70,6 @@
         <joint name="LARM_JOINT4" />
         <joint name="LARM_JOINT5" />
         <joint name="LARM_JOINT6" />
-        <joint name="L_INDEXMP_R" />
-        <joint name="L_INDEXMP_P" />
-        <joint name="L_INDEXPIP_R" />
-        <joint name="L_MIDDLEPIP_R" />
-        <joint name="L_THUMBCM_Y" />
-        <joint name="L_THUMBCM_P" />
         <joint name="RARM_JOINT0" />
         <joint name="RARM_JOINT1" />
         <joint name="RARM_JOINT2" />
@@ -83,12 +77,6 @@
         <joint name="RARM_JOINT4" />
         <joint name="RARM_JOINT5" />
         <joint name="RARM_JOINT6" />
-        <joint name="R_INDEXMP_R" />
-        <joint name="R_INDEXMP_P" />
-        <joint name="R_INDEXPIP_R" />
-        <joint name="R_MIDDLEPIP_R" />
-        <joint name="R_THUMBCM_Y" />
-        <joint name="R_THUMBCM_P" />
         <joint name="LLEG_JOINT0" />
         <joint name="LLEG_JOINT1" />
         <joint name="LLEG_JOINT2" />
@@ -103,6 +91,8 @@
         <joint name="RLEG_JOINT4" />
         <joint name="RLEG_JOINT5" />
         <joint name="RLEG_JOINT6" />
+        <joint name="larm_eef_1" />
+        <joint name="rarm_eef_1" />
     </group>
     <group name="LARM_EEF">
         <link name="LARM_EEF_CHILD" />
@@ -155,7 +145,7 @@
         <joint name="HEAD_JOINT0" value="0" />
         <joint name="HEAD_JOINT1" value="0" />
     </group_state>
-    <group_state name="reset_full_body" group="full_body">
+    <group_state name="reset_whole_body" group="whole_body">
         <joint name="CHEST_JOINT0" value="0" />
         <joint name="CHEST_JOINT1" value="0" />
         <joint name="HEAD_JOINT0" value="0" />
@@ -174,12 +164,6 @@
         <joint name="LLEG_JOINT4" value="0" />
         <joint name="LLEG_JOINT5" value="0" />
         <joint name="LLEG_JOINT6" value="0" />
-        <joint name="L_INDEXMP_P" value="0" />
-        <joint name="L_INDEXMP_R" value="0" />
-        <joint name="L_INDEXPIP_R" value="0" />
-        <joint name="L_MIDDLEPIP_R" value="0" />
-        <joint name="L_THUMBCM_P" value="0" />
-        <joint name="L_THUMBCM_Y" value="0" />
         <joint name="RARM_JOINT0" value="0" />
         <joint name="RARM_JOINT1" value="0" />
         <joint name="RARM_JOINT2" value="0" />
@@ -194,12 +178,6 @@
         <joint name="RLEG_JOINT4" value="0" />
         <joint name="RLEG_JOINT5" value="0" />
         <joint name="RLEG_JOINT6" value="0" />
-        <joint name="R_INDEXMP_P" value="0" />
-        <joint name="R_INDEXMP_R" value="0" />
-        <joint name="R_INDEXPIP_R" value="0" />
-        <joint name="R_MIDDLEPIP_R" value="0" />
-        <joint name="R_THUMBCM_P" value="0" />
-        <joint name="R_THUMBCM_Y" value="0" />
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="right_eef" parent_link="RARM_EEF_PARENT" group="RARM_EEF" />

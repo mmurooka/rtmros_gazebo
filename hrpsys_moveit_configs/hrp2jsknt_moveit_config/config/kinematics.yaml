@@ -23,8 +23,12 @@ right_arm_torso:
   kinematics_solver_search_resolution: 0.005
   kinematics_solver_timeout: 0.005
   kinematics_solver_attempts: 3
-full_body:
-  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+whole_body: # [attention] Group_name should be "whole_body" because of IK server requirement.
+  kinematics_solver: srv_kinematics_plugin/SrvKinematicsPlugin
   kinematics_solver_search_resolution: 0.005
-  kinematics_solver_timeout: 0.005
-  kinematics_solver_attempts: 3
+  kinematics_solver_timeout: 0.5
+  kinematics_solver_attempts: 1
+  kinematics_solver_ik_links:
+    - RARM_LINK6
+    - LARM_LINK6
+  kinematics_solver_service_name: /solve_ik
