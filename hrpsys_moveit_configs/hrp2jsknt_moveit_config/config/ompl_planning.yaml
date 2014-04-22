@@ -126,7 +126,7 @@ right_gripper:
     - PRMstarkConfigDefault
   projection_evaluator: joints(R_INDEXMP_R,R_INDEXMP_P)
   longest_valid_segment_fraction: 0.05
-full_body:
+whole_body:
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
