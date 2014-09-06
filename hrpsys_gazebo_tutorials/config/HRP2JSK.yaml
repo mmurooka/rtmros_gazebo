@@ -1,6 +1,6 @@
 hrpsys_gazebo_configuration:
 ## velocity feedback for joint control, use parameter gains/joint_name/p_v
-  use_velocity_feedback: true
+#  use_velocity_feedback: true
 ## synchronized hrpsys and gazebo
 # use_synchronized_command: false
 # name of robot (using for namespace)
