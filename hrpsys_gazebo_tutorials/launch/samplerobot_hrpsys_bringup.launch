@@ -16,7 +16,7 @@
   <node pkg="tf" type="static_transform_publisher" name="sensor_transform_4"
         args="0 0 0 0 0 0 /WAIST_LINK0 gyrometer 100" />
 
-  <include file="$(find hrpsys_gazebo_tutorials)/launch/robot_hrpsys_bringup.launch">
+  <include file="$(find hrpsys_gazebo_general)/launch/robot_hrpsys_bringup.launch">
     <arg name="ROBOT_TYPE" value="SampleRobot" />
     <arg name="USE_INSTANCE_NAME" value="true" />
     <arg name="SYNCHRONIZED" value="$(arg SYNCHRONIZED)" />

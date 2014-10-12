@@ -2,7 +2,7 @@
   <arg name="SYNCHRONIZED" default="false" />
   <arg name="LOOPBACK"     default="false" />
 
-  <include file="$(find hrpsys_gazebo_tutorials)/launch/robot_hrpsys_bringup.launch">
+  <include file="$(find hrpsys_gazebo_general)/launch/robot_hrpsys_bringup.launch">
     <arg name="ROBOT_TYPE"   value="HRP4C" />
     <arg name="LOOPBACK"     value="$(arg LOOPBACK)" />
     <arg name="SYNCHRONIZED" value="$(arg SYNCHRONIZED)" />
