@@ -1,0 +1,16 @@
+<robot name="simple_box">
+  <link name="nil_link">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.25 0.5 0.35" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.25 0.5 0.35" />
+      </geometry>
+    </collision>
+  </link>
+</robot>

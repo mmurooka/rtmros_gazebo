@@ -65,7 +65,8 @@
   (setq *gplist* nil)
   (dotimes (i model-num)
     ;; add model to the gazebo world
-    (unix::system (format nil "gzfactory spawn -f `rospack find hrpsys_gazebo_tutorials`/environment_models/~a/model~d.urdf -m ~a -x 0 -y 0 -z 1" *model-name* (+ i 1) *model-name*))
+    ;; (unix::system (format nil "gzfactory spawn -f `rospack find hrpsys_gazebo_tutorials`/environment_models/~a/model~d.urdf -m ~a -x 0 -y 0 -z 1" *model-name* (+ i 1) *model-name*))
+    (unix::system (format nil "rosrun gazebo_ros spawn_model -urdf -file `rospack find hrpsys_gazebo_tutorials`/environment_models/~a/model~d.urdf -model ~a -x 0 -y 0 -z 1" *model-name* (+ i 1) (format nil "~a~d" *model-name* i)))
 
     ;; make gazebo plugin interface
     (eval (list 'setq (read-from-string (format nil "*gp~d*" (+ i 1))) (init-gazebo-plugin (format nil "obj~d" (+ i 1)))))

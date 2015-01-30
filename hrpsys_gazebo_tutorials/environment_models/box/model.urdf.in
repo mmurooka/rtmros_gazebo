@@ -1,0 +1,34 @@
+<robot name="box">
+  <link name="nil_link">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.25 0.5 0.35" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.25 0.5 0.35" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="nil_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo>
+    <plugin filename="libAddForcePlugin2.so" name="simple_box_add_force_plugin2">
+      <objname>obj</objname>
+      <linkname1>LARM_LINK6</linkname1>
+      <linkname2>RARM_LINK6</linkname2>
+    </plugin>
+    <plugin filename="libGetVelPlugin.so" name="simple_box_get_vel_plugin">
+      <objname>obj</objname>
+      <linkname>nil_link</linkname>
+    </plugin>
+    <plugin filename="libSetVelPlugin.so" name="simple_box_set_vel_plugin">
+      <objname>obj</objname>
+      <linkname>nil_link</linkname>
+    </plugin>
+  </gazebo>
+</robot>
