@@ -108,10 +108,10 @@
 	(send *rhand* :newcoords (make-coords :pos (v+ (send obj-tmp :worldpos) (float-vector 1800 410 800)):rot (rpy-matrix pi -pi/2 0)))
 	)
        ((equal model-name "small_box")
-	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (instance cardboard-box :init :length 250 :width 500 :height 1000 :color :blue :name "small_box")))
+	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (instance cardboard-box :init :length 200 :width 315 :height 610 :color :blue :name "small_box")))
 	(eval (list 'setq 'obj-tmp (read-from-string (format nil "*obj~d*" (+ i 1)))))
-	(send *lhand* :newcoords (make-coords :pos #f(300 -300 900) :rpy (list 0 -pi/2 pi)))
-	(send *rhand* :newcoords (make-coords :pos #f(300 300 900) :rpy (list 0 -pi/2 pi)))
+	(send *lhand* :newcoords (make-coords :pos #f(230 -200 510) :rpy (list 0 -pi/2 pi)))
+	(send *rhand* :newcoords (make-coords :pos #f(230 200 510) :rpy (list 0 -pi/2 pi)))
         )
        ((equal model-name "large_box")
 	(eval (list 'setq (read-from-string (format nil "*obj~d*" (+ i 1))) (instance cardboard-box :init :length 800 :width 440 :height 850 :color :blue :name "large_box")))
@@ -131,7 +131,7 @@
   (unless (boundp '*pickview*)
     (pickview :no-menu t))
   (objects (append *arlist* *handlist* *objlist* (list *ground*)))
-  (send *viewer* :viewsurface :bg-color #f(1 1 1))
+  ;;(send *viewer* :viewsurface :bg-color #f(1 1 1))
 
   ;; set hook-pose
   (set-hand-pose :hook-pose :arms)

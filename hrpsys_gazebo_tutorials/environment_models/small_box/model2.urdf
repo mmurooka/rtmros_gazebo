@@ -11,13 +11,13 @@
     <visual>
       <origin xyz="0 0 0"/>
       <geometry>
-        <box size="0.25 0.5 1.0"/>
+        <box size="0.20 0.315 0.61"/>
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0"/>
       <geometry>
-        <box size="0.25 0.5 1.0"/>
+        <box size="0.20 0.315 0.61"/>
       </geometry>
     </collision>
     <inertial>
@@ -578,7 +578,7 @@
     </plugin>
   </gazebo>
   <joint name="LHAND_DUMMY" type="revolute">
-    <origin rpy="3.14159 -1.5708 0" xyz="0.30 -0.30 0.40"/>
+    <origin rpy="3.14159 -1.5708 0" xyz="0.23 -0.20 0.20"/>
     <parent link="nil_link2"/>
     <child link="LARM_LINK6"/>
     <axis xyz="-1 0 0"/>
@@ -586,7 +586,7 @@
     <dynamics damping="0.2" friction="0"/>
   </joint>
   <joint name="RHAND_DUMMY" type="revolute">
-    <origin rpy="3.14159 -1.5708 0" xyz="0.30 0.30 0.40"/>
+    <origin rpy="3.14159 -1.5708 0" xyz="0.23 0.20 0.20"/>
     <parent link="nil_link2"/>
     <child link="RARM_LINK6"/>
     <axis xyz="-1 0 0"/>
