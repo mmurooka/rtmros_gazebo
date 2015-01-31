@@ -1,0 +1,25 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="large_box" >
+  <xacro:include filename="$(find hrpsys_gazebo_tutorials)/environment_models/large_box/large_box6.urdf" />
+  <xacro:include filename="$(find hrpsys_gazebo_tutorials)/robot_models/HRP3HAND_L/HRP3HAND_L_mass0.urdf" >
+    <origin xyz="0.3560 -0.330 0.9660" rpy="3.14159 -1.5708 0"/>
+  </xacro:include>
+  <xacro:include filename="$(find hrpsys_gazebo_tutorials)/robot_models/HRP3HAND_R/HRP3HAND_R_mass0.urdf" >
+    <origin xyz="0.3560 0.330 0.9660" rpy="3.14159 -1.5708 0"/>
+  </xacro:include>
+  <joint name="LHAND_DUMMY" type="revolute">
+    <origin xyz="0.50 -0.28 0.40" rpy="3.14159 -1.5708 0"/>
+    <parent link="nil_link"/>
+    <child link="LARM_LINK6"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="100" lower="0" upper="0" velocity="0"/>
+    <dynamics damping="0.2" friction="0"/>
+  </joint>
+  <joint name="RHAND_DUMMY" type="revolute">
+    <origin xyz="0.50 0.28 0.40" rpy="3.14159 -1.5708 0"/>
+    <parent link="nil_link"/>
+    <child link="RARM_LINK6"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="100" lower="0" upper="0" velocity="0"/>
+    <dynamics damping="0.2" friction="0"/>
+  </joint>
+</robot>

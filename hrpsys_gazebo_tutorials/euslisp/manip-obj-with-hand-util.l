@@ -193,11 +193,11 @@
   (&key (obj *obj1*) (return-contact-z nil))
 
   (let* ((bottom-face (send obj :faces))
-	 (bottom-edges (send (elt bottom-face 7) :edges))
+	 (bottom-edges (send (elt bottom-face 1) :edges))
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges))
 	 (bottom-vertices-z (mapcar #'(lambda (v) (elt v 2)) bottom-vertices))
 	 bottom-vcont bottom-lcont
-	 (contact-z-thre 1)
+	 (contact-z-thre 50)
 	 ;;(contact-z-thre -0.5)
 	 )
     (dotimes (i (length bottom-vertices-z))
@@ -238,7 +238,7 @@
   (&key (obj *obj1*) (pos (float-vector 10 20)) (output-string (string (send obj :get :contact))))
 
   (let* ((bottom-face (send obj :faces))
-	 (bottom-edges (send (elt bottom-face 7) :edges))
+	 (bottom-edges (send (elt bottom-face 1) :edges))
 	 (bottom-vertices (mapcar #'(lambda (l) (car (send l :vertices))) bottom-edges)))
     (dotimes (i (length bottom-vertices))
       (when (elt (send obj :get :vcont) i)

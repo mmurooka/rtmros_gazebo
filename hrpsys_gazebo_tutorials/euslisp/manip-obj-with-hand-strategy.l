@@ -142,3 +142,12 @@
   (gen-push-tilt)
   (gen-lift-up))
 
+;; generate ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun gen-strategy-from-force
+  (lf rf &key (num 50))
+  (let* (tmp-strategy)
+    (dotimes (i num)
+      (push (list lf rf) tmp-strategy))
+    tmp-strategy)
+  )
+

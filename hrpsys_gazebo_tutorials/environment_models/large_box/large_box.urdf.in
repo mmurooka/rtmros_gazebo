@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot name="large_box-robot"
+       xmlns:xi="http://www.w3.org/2001/XInclude"
+       xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
+       xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
+       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
+       xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
+       xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
+       xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics">
+  <gazebo>
+    <static>false</static>
+  </gazebo>
+  <link name="nil_link">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.80 0.44 0.85" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.80 0.44 0.85" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="nil_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo>
+    <plugin filename="libAddForcePlugin2.so" name="simple_box_add_force_plugin2">
+      <objname>obj</objname>
+      <linkname1>LARM_LINK6</linkname1>
+      <linkname2>RARM_LINK6</linkname2>
+    </plugin>
+    <plugin filename="libGetVelPlugin.so" name="simple_box_get_vel_plugin">
+      <objname>obj</objname>
+      <linkname>nil_link</linkname>
+    </plugin>
+    <plugin filename="libSetVelPlugin.so" name="simple_box_set_vel_plugin">
+      <objname>obj</objname>
+      <linkname>nil_link</linkname>
+    </plugin>
+  </gazebo>
+</robot>

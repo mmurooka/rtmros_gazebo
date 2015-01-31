@@ -65,7 +65,7 @@
 	   (f1 (float-vector 0 0 0)) (f2 (float-vector 0 0 0))
 	   (m1 (float-vector 0 0 0)) (m2 (float-vector 0 0 0))
 	   (update-force-flag nil)
-	   (draw-interval 10))
+	   (draw-interval 2))
       (cond (manip-input (setq loop-num (length manip-input)))
 	    (t (setq loop-num *manip-loop-num*)))
       ;; when obj-num is specified, set update-state-flag of unspecified objects as t
@@ -244,7 +244,7 @@
 (defun check-fall-down ;; return t when falling down
   (&optional (c (send *obj1* :copy-worldcoords)))
 
-  (let* ((rp-angle-thre (/ pi 10))
+  (let* ((rp-angle-thre (/ pi 5))
 	 (base-vec (float-vector 0 0 1))
 	 (trans-base-vec (send c :rotate-vector base-vec))
 	 (rp-angle (abs (acos (v. base-vec trans-base-vec)))))
